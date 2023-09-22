@@ -13,7 +13,7 @@
         android:theme="@style/Theme.Onuiandroid"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name="app.junsu.onui_android.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Onuiandroid">

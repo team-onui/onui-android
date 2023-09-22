@@ -3,44 +3,31 @@ package app.junsu.onui_android
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import app.junsu.onui_android.login.LoginScreen
 import app.junsu.onui_android.ui.theme.OnuiandroidTheme
+import com.example.yuseongallowancepaymentsandroid.navigation.AppNavigationItem
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             OnuiandroidTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
+                BaseApp()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    OnuiandroidTheme {
-        Greeting("Android")
+fun BaseApp() {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = AppNavigationItem.Login.route) {
+        composable(AppNavigationItem.Login.route) {
+            LoginScreen(navController = navController)
+        }
     }
 }
