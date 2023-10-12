@@ -2,4 +2,25 @@
 <resources>
 
     <style name="Theme.Onuiandroid" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <color name="color_primary">@color/Default</color>
+    <color name="color_on_primary">@color/gray_0</color>
+    <color name="color_primary_container">@color/lighten_2</color>
+    <color name="color_on_primary_container">@color/darken_2</color>
+
+    <color name="color_error">@color/error_default</color>
+    <color name="color_on_error">@color/gray_0</color>
+    <color name="color_error_container">@color/error_lighten_2</color>
+    <color name="color_on_error_container">@color/error_darken_2</color>
+
+    <color name="background">@color/gray_3</color>
+    <color name="color_on_background">@color/gray_10</color>
+    <color name="color_surface">@color/gray_0</color>
+    <color name="color_on_surface">@color/gray_10</color>
+    <color name="color_background_variant">@color/gray_7</color>
+    <color name="color_on_background_variant">@color/gray_5</color>
+    <color name="color_surface_variant">@color/gray_7</color>
+    <color name="color_on_surface_variant">@color/gray_5</color>
+    <color name="color_outline">@color/gray_5</color>
+    <color name="color_outline_variant">@color/gray_3</color>
 </resources>

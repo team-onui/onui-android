@@ -9,7 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.junsu.onui_android.login.LoginScreen
 import app.junsu.onui_android.ui.theme.OnuiandroidTheme
-import com.example.yuseongallowancepaymentsandroid.navigation.AppNavigationItem
+import app.junsu.onui_android.navigation.AppNavigationItem
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

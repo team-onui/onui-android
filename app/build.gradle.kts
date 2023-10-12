@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "app.junsu.onui"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "app.junsu.onui"
@@ -58,7 +58,8 @@ dependencies {
     implementation(libs.ui)
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
-    implementation(libs.material3)
+    implementation(libs.material)
+    implementation(libs.material.compose)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.okhttp)
