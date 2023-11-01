@@ -45,3 +45,48 @@ val errorDarken1: Color
     @Composable get() = colorResource(id = R.color.error_darken_1)
 val errorDarken2: Color
     @Composable get() = colorResource(id = R.color.error_darken_2)
+
+val primary: Color
+    @Composable get() = colorResource(id = R.color.color_primary)
+
+val onPrimary: Color
+    @Composable get() = colorResource(id = R.color.color_on_primary)
+
+val primaryContainer: Color
+@Composable get() = colorResource(id = R.color.color_primary_container)
+
+val onPrimaryContainer: Color
+    @Composable get() = colorResource(id = R.color.color_on_primary_container)
+
+val error: Color
+    @Composable get() = colorResource(id = R.color.color_error)
+
+val onError: Color
+    @Composable get() = colorResource(id = R.color.color_on_error)
+
+val errorContainer: Color
+    @Composable get() = colorResource(id = R.color.color_error_container)
+
+val onErrorContainer: Color
+    @Composable get() = colorResource(id = R.color.color_on_error_container)
+
+val background: Color
+    @Composable get() = colorResource(id = R.color.background)
+val onBackground: Color
+    @Composable get() = colorResource(id = R.color.color_on_background)
+val surface: Color
+    @Composable get() = colorResource(id = R.color.color_surface)
+val onSurface: Color
+    @Composable get() = colorResource(id = R.color.color_on_surface)
+val backgroundVariant: Color
+    @Composable get() = colorResource(id = R.color.color_background_variant)
+val onBackgroundVariant: Color
+    @Composable get() = colorResource(id = R.color.color_on_background_variant)
+val surfaceVariant: Color
+    @Composable get() = colorResource(id = R.color.color_surface_variant)
+val onSurfaceVariant: Color
+    @Composable get() = colorResource(id = R.color.color_on_surface_variant)
+val outline: Color
+    @Composable get() = colorResource(id = R.color.color_outline)
+val outlineVariant: Color
+    @Composable get() = colorResource(id = R.color.color_outline_variant)
