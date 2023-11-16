@@ -4,4 +4,6 @@
     <string name="last_days">지난 7일</string>
     <string name="timeline">Timeline (커스텀 컴포넌트)</string>
     <string name="tip">감정 관리 팁 (PAGER)</string>
+    <string name="client_id">797489065606-36a97qn426j75m2cjbnmk34kp71rasst.apps.googleusercontent.com</string>
+    <string name="api_key">AIzaSyD-fVjklndrkEosGsLph1Mfb1XcG8N7opk</string>
 </resources>

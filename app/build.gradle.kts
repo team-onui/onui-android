@@ -76,5 +76,10 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pager.indicators)
-    implementation("com.google.accompanist:accompanist-flowlayout:0.30.0")
+    implementation(libs.accompanist.flowlayout)
+    implementation(libs.logging.interceptor)
+    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation(libs.play.services.auth)
+    implementation(libs.coil.compose)
 }
