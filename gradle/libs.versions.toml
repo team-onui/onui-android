@@ -3,7 +3,10 @@ accompanistFlowlayout = "0.30.0"
 accompanistPager = "0.26.5-rc"
 agp = "8.1.1"
 coilCompose = "2.5.0"
+compose = "1.12.0"
+composeM3 = "1.12.0"
 converter-gson = "2.9.0"
+core = "1.12.0"
 firebaseAuth = "22.0.0"
 firebaseBom = "32.0.0"
 googleServices = "4.3.15"
@@ -24,8 +27,10 @@ material = "1.10.0"
 materialIconsExtended = "1.4.0"
 navigation-compose = "2.6.0"
 okhttp = "4.11.0"
+paletteKtx = "1.0.0"
 playServicesAuth = "20.5.0"
 retrofit = "2.9.0"
+views = "1.12.0"
 
 [libraries]
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanistFlowlayout" }
@@ -35,8 +40,12 @@ androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-com
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+androidx-palette-ktx = { module = "androidx.palette:palette-ktx", version.ref = "paletteKtx" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+compose = { module = "com.patrykandpatrick.vico:compose", version.ref = "compose" }
+compose-m3 = { module = "com.patrykandpatrick.vico:compose-m3", version.ref = "composeM3" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converter-gson" }
+core = { module = "com.patrykandpatrick.vico:core", version.ref = "core" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
@@ -60,6 +69,7 @@ ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+views = { module = "com.patrykandpatrick.vico:views", version.ref = "views" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

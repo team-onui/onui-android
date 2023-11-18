@@ -29,6 +29,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,12 +42,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.junsu.onui.R
@@ -66,7 +69,9 @@ import app.junsu.onui_android.presentation.ui.theme.outlineVariant
 import app.junsu.onui_android.presentation.ui.theme.primary
 import app.junsu.onui_android.presentation.ui.theme.primaryContainer
 import app.junsu.onui_android.presentation.ui.theme.surface
+import app.junsu.onui_android.toBigImage
 import app.junsu.onui_android.toFile
+import app.junsu.onui_android.toGrayImage
 import com.google.accompanist.flowlayout.FlowRow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -98,6 +103,11 @@ fun RemindScreen(navController: NavController) {
     var viewLate by remember { mutableIntStateOf(0) }
     var selectImage by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
+    LaunchedEffect(Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            viewModel.fetchProfile()
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -110,7 +120,11 @@ fun RemindScreen(navController: NavController) {
         Column(
             modifier = Modifier.verticalScroll(scrollState)
         ) {
-            Chat(text = "안녕하세요~ 오늘은 어떤 하루였나요?", viewLate = { viewLate += it })
+            Chat(
+                text = "안녕하세요~ 오늘은 어떤 하루였나요?",
+                viewLate = { viewLate += it },
+                theme = viewModel.profile.profileTheme,
+            )
             if (viewLate >= 1) {
                 TodayFeel(
                     icons = icons,
@@ -119,7 +133,7 @@ fun RemindScreen(navController: NavController) {
                     message = { feelMessage = it },
                     fetchIcons = {
                         selectMood = it
-                        Log.d("select",selectMood.toString())
+                        Log.d("select", selectMood.toString())
                     }
                 )
             }
@@ -127,6 +141,7 @@ fun RemindScreen(navController: NavController) {
                 Chat(
                     text = "그렇군요, 오늘 하루 수고 많으셨어요.\n${feelChat[feelMessage]}\n어떤 감정을 느끼셨나요?",
                     viewLate = { viewLate += it },
+                    theme = viewModel.profile.profileTheme,
                 )
                 if (viewLate >= 2) {
                     TodayMood(
@@ -146,6 +161,7 @@ fun RemindScreen(navController: NavController) {
                 Chat(
                     text = "무슨 일이 있었는지 알려주세요.",
                     viewLate = { viewLate += it },
+                    theme = viewModel.profile.profileTheme,
                 )
                 if (viewLate >= 3)
                     TodayNote(
@@ -159,6 +175,7 @@ fun RemindScreen(navController: NavController) {
                 Chat(
                     text = "(격려 메시지)\n" + "기억에 남는 사진이 있나요?",
                     viewLate = { viewLate += it },
+                    theme = viewModel.profile.profileTheme,
                 )
                 if (viewLate >= 4) TodayPhoto(
                     viewStateChange = {
@@ -187,6 +204,7 @@ fun RemindScreen(navController: NavController) {
                 Chat(
                     text = "다른 사람들과 감정을 공유해보실래요?",
                     viewLate = { viewLate += it },
+                    theme = viewModel.profile.profileTheme,
                 )
                 if (viewLate >= 5) {
                     Row(modifier = Modifier.padding(bottom = 12.dp)) {
@@ -217,7 +235,7 @@ fun RemindScreen(navController: NavController) {
                         Button(
                             onClick = {
                                 viewModel.postMood(selectText, selectMood, selectMoods, selectImage)
-                                Log.d("viewModel","$selectText,$selectMood")
+                                Log.d("viewModel", "$selectText,$selectMood")
                                 navController.popBackStack()
                             },
                             modifier = Modifier
@@ -264,8 +282,19 @@ fun TodayFeel(
             )
         ) {
             icons.forEachIndexed { index, icon ->
+                val mood = when (index) {
+                    0 -> Mood.GOOD
+                    1 -> Mood.FINE
+                    2 -> Mood.NOT_BAD
+                    3 -> Mood.BAD
+                    4 -> Mood.WORST
+                    else -> Mood.NOT_BAD
+                }
                 Image(
-                    painter = painterResource(id = icon),
+                    painter = painterResource(
+                        id = if (selectedIconIndex == index) mood.toBigImage()
+                        else mood.toGrayImage()
+                    ),
                     contentDescription = when (index) {
                         0 -> "veryGood"
                         1 -> "good"
@@ -285,34 +314,14 @@ fun TodayFeel(
                                 selectedIconIndex = index
                                 icons.forEachIndexed { i, _ ->
                                     icons[i] = if (i == index) {
-                                        when (i) {
-                                            0 -> R.drawable.very_good_big
-                                            1 -> R.drawable.good_big
-                                            2 -> R.drawable.normal_big
-                                            3 -> R.drawable.bad_big
-                                            4 -> R.drawable.very_bad_big
-                                            else -> R.drawable.very_good_big
-                                        }
+                                        mood.toBigImage()
                                     } else {
-                                        when (i) {
-                                            0 -> R.drawable.very_good_gray
-                                            1 -> R.drawable.good_gray
-                                            2 -> R.drawable.normal_gray
-                                            3 -> R.drawable.bad_gray
-                                            4 -> R.drawable.very_bad_gray
-                                            else -> R.drawable.very_good_gray
-                                        }
+                                        R.drawable.very_good_gray
                                     }
                                 }
                                 iconsChange(icons)
                                 viewStateChange(1)
-                                when (index) {
-                                    0 -> fetchIcons(Mood.GOOD)
-                                    1 -> fetchIcons(Mood.FINE)
-                                    2 -> fetchIcons(Mood.NOT_BAD)
-                                    3 -> fetchIcons(Mood.BAD)
-                                    4 -> fetchIcons(Mood.WORST)
-                                }
+                                fetchIcons(mood)
                                 message(index)
                             }
                         },
@@ -321,6 +330,7 @@ fun TodayFeel(
         }
     }
 }
+
 
 @Composable
 fun TodayMood(
@@ -569,6 +579,7 @@ fun TodayState(
 fun Chat(
     text: String,
     viewLate: (Int) -> Unit,
+    theme: String,
 ) {
     var showMessage by remember { mutableStateOf(false) }
     Row(
@@ -580,11 +591,26 @@ fun Chat(
             ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.chat_icon),
-            contentDescription = "chatIcon",
-            modifier = Modifier.padding(end = 8.dp)
-        )
+
+        Box(modifier = Modifier.padding(8.dp)) {
+            val color = if (theme.isNotBlank()) Color(("#$theme").toColorInt()) else primary
+            Icon(
+                painter = painterResource(id = R.drawable.chat_onui_body),
+                contentDescription = "blank",
+                tint = color,
+                modifier = Modifier
+                    .size(44.dp)
+                    .align(Alignment.TopCenter)
+            )
+            Image(
+                painter = painterResource(id = R.drawable.eye),
+                contentDescription = "eye",
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(6.dp)
+                    .size(16.dp)
+            )
+        }
         if (!showMessage) MessageLoading()
         LaunchedEffect(Unit) {
             delay(500L)

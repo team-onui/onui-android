@@ -8,25 +8,48 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-<!--Primary Variant-->
+    <!--Primary Variant-->
     <color name="lighten_2">#8ED6A7</color>
     <color name="lighten_1">#65BC84</color>
     <color name="Default">#4F9568</color>
     <color name="darken_1">#407152</color>
     <color name="darken_2">#2D583C</color>
 
-<!--Gray Scale-->
+    <!--Gray Scale-->
     <color name="gray_0">#ffffff</color>
     <color name="gray_3">#eeeeee</color>
     <color name="gray_5">#888888</color>
     <color name="gray_7">#343434</color>
     <color name="gray_10">#000000</color>
 
-<!--Error Variant-->
+    <!--Error Variant-->
     <color name="error_lighten_2">#ffcccc</color>
     <color name="error_lighten_1">#ff9d9d</color>
     <color name="error_default">#ff4646</color>
     <color name="error_darken_1">#c23535</color>
     <color name="error_darken_2">#852424</color>
 
+
+    <color name="default_image_color">#ffffff</color>
+
+    <color name="color_0">#ffffff</color>
+    <color name="color_1">#a8d7df</color>
+    <color name="color_2">#d5ead8</color>
+    <color name="color_3">#f48686</color>
+    <color name="color_4">#1b6f0e</color>
+    <color name="color_5">#ffcd33</color>
+    <color name="color_6">#98e695</color>
+    <color name="color_7">#e6bb95</color>
+    <color name="color_8">#ff007f</color>
+    <color name="color_9">#7b4ba2</color>
+    <color name="color_10">#9999bb</color>
+    <color name="color_11">#2098ae</color>
+    <color name="color_12">#e791a9</color>
+    <color name="color_13">#b7934f</color>
+    <color name="color_14">#ffff66</color>
+    <color name="color_15">#ff6699</color>
+    <color name="color_16">#6a0572</color>
+    <color name="color_17">#ff9900</color>
+    <color name="color_18">#66ccff</color>
+    <color name="color_19">#090a14</color>
 </resources>

@@ -1,7 +1,6 @@
 package app.junsu.onui_android.presentation.feature.calendar
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,14 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import app.junsu.onui.R
 import app.junsu.onui_android.data.response.diary.DayDiaryResponse
-import app.junsu.onui_android.data.response.diary.RemindResponse
 import app.junsu.onui_android.presentation.component.Header
 import app.junsu.onui_android.presentation.ui.theme.body2
 import app.junsu.onui_android.presentation.ui.theme.gray3
@@ -124,7 +120,7 @@ fun Content(
             textAlign = TextAlign.Center,
         )
         AsyncImage(
-            model= img,
+            model = img,
             contentDescription = null,
             modifier = Modifier
                 .padding(

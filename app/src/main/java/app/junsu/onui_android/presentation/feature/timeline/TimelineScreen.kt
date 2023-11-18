@@ -53,15 +53,16 @@ fun TimelineScreen(
     viewModel: TimelineViewModel
 ) {
     val lazyListState = rememberLazyListState()
-    var fetchDate by remember { mutableStateOf(LocalDate.now()) }
+    var fetchDate by remember { mutableStateOf(viewModel.fetchDate) }
     var timeline by remember { mutableStateOf(viewModel.timeline) }
     LaunchedEffect(fetchDate) {
         viewModel.fetchTimeLine(
-            idx = 0, size = 2, date = fetchDate.toString(),
+            idx = 0, size = 4, date = fetchDate.toString(),
             response = { timeline = it }
         )
+        viewModel.fetchDate = fetchDate
     }
-    Log.d("fetch", fetchDate.toString())
+    Log.d("fetch", viewModel.fetchDate.toString())
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -114,6 +115,8 @@ fun TimelineScreen(
                     moods = timeline.content?.get(it)?.tagList ?: listOf(),
                     navController = navController,
                     img = timeline.content?.get(it)?.image,
+                    index = it,
+                    viewModel = viewModel,
                 )
             }
         }
@@ -128,6 +131,8 @@ fun Content(
     moods: List<String>,
     navController: NavController,
     img: String?,
+    index: Int,
+    viewModel: TimelineViewModel,
 ) {
     Column(
         modifier = Modifier
@@ -138,6 +143,7 @@ fun Content(
             .background(surface)
             .clickable {
                 navController.navigate(AppNavigationItem.TimelineDetail.route)
+                viewModel.index = index
             }
     ) {
         Text(

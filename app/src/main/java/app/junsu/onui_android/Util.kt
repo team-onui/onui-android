@@ -4,50 +4,178 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
-import android.util.Log
 import app.junsu.onui.R
-import app.junsu.onui_android.exception.BadRequestException
-import app.junsu.onui_android.exception.ConflictException
-import app.junsu.onui_android.exception.ForbiddenException
-import app.junsu.onui_android.exception.NeedLoginException
-import app.junsu.onui_android.exception.NoInternetException
-import app.junsu.onui_android.exception.NotFoundException
-import app.junsu.onui_android.exception.ServerException
-import app.junsu.onui_android.exception.TimeoutException
-import app.junsu.onui_android.exception.UnauthorizedException
-import app.junsu.onui_android.exception.UnknownException
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.Task
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import retrofit2.HttpException
 import java.io.File
 import java.io.FileOutputStream
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
-import java.util.concurrent.CancellationException
 
 enum class Mood { WORST, BAD, NOT_BAD, FINE, GOOD, }
 
-fun Mood.toSmallImage() =
-    when (this) {
-        Mood.WORST -> R.drawable.very_bad_small
-        Mood.BAD -> R.drawable.bad_samll
-        Mood.NOT_BAD -> R.drawable.normal_small
-        Mood.FINE -> R.drawable.good_small
-        else -> R.drawable.very_good_small
-    }
+val sproutImages = listOf(
+    R.drawable.sprout_good,
+    R.drawable.sprout_fine,
+    R.drawable.sprout_normal,
+    R.drawable.sprout_green,
+    R.drawable.sprout_bad,
+)
+val flushingImages = listOf(
+    R.drawable.flushing_good,
+    R.drawable.flushing_fine,
+    R.drawable.flushing_normal,
+    R.drawable.flushing_bad,
+    R.drawable.flushing_very_bad,
+)
+
+val catImages = listOf(
+    R.drawable.cat_good,
+    R.drawable.cat_fine,
+    R.drawable.cat_normal,
+    R.drawable.cat_bad,
+    R.drawable.cat_very_bad,
+)
+
+val defaultImage = listOf(
+    R.drawable.very_good_small,
+    R.drawable.good_small,
+    R.drawable.normal_small,
+    R.drawable.bad_samll,
+    R.drawable.very_bad_small,
+)
+
+
+val bigImageList = listOf(
+    listOf(
+        R.drawable.very_bad_big,
+        R.drawable.bad_big,
+        R.drawable.normal_big,
+        R.drawable.good_big,
+        R.drawable.very_good_big,
+    ),
+    listOf(
+        R.drawable.cat_very_bad,
+        R.drawable.cat_bad,
+        R.drawable.cat_normal,
+        R.drawable.cat_fine,
+        R.drawable.cat_good,
+    ),
+    listOf(
+        R.drawable.flushing_very_bad,
+        R.drawable.flushing_bad,
+        R.drawable.flushing_normal,
+        R.drawable.flushing_fine,
+        R.drawable.flushing_good,
+    ),
+    listOf(
+        R.drawable.sprout_bad,
+        R.drawable.sprout_green,
+        R.drawable.sprout_normal,
+        R.drawable.sprout_fine,
+        R.drawable.sprout_good,
+    )
+)
+
+val smallImageList = listOf(
+    listOf(
+        R.drawable.very_bad_small,
+        R.drawable.very_bad_small,
+        R.drawable.normal_small,
+        R.drawable.good_small,
+        R.drawable.very_good_small,
+    ),
+    listOf(
+        R.drawable.cat_very_bad,
+        R.drawable.cat_bad,
+        R.drawable.cat_normal,
+        R.drawable.cat_fine,
+        R.drawable.cat_good,
+    ),
+    listOf(
+        R.drawable.flushing_very_bad,
+        R.drawable.flushing_bad,
+        R.drawable.flushing_normal,
+        R.drawable.flushing_fine,
+        R.drawable.flushing_good,
+    ),
+    listOf(
+        R.drawable.sprout_bad,
+        R.drawable.sprout_green,
+        R.drawable.sprout_normal,
+        R.drawable.sprout_fine,
+        R.drawable.sprout_good,
+    )
+)
+
+val grayImageList = listOf(
+    listOf(
+        R.drawable.very_bad_gray,
+        R.drawable.bad_gray,
+        R.drawable.normal_gray,
+        R.drawable.good_gray,
+        R.drawable.very_good_gray,
+    ),
+    listOf(
+        R.drawable.nya_verybad_gray,
+        R.drawable.nya_bad_gray,
+        R.drawable.nya_normal_gray,
+        R.drawable.nya_bad_gray,
+        R.drawable.nya_verygood_gray,
+    ),
+    listOf(
+        R.drawable.hong_verybad_gray,
+        R.drawable.hong_bad_gray,
+        R.drawable.hong_normal_gray,
+        R.drawable.hong_good_gray,
+        R.drawable.hong_verygood_gray,
+    ),
+    listOf(
+        R.drawable.ssac_verybad_gray,
+        R.drawable.ssac_bad_gray,
+        R.drawable.ssac_normal_gray,
+        R.drawable.ssac_good_gray,
+        R.drawable.ssac_verygood_gray,
+    )
+)
+
+fun String.toInt(): Int = when (this) {
+    "default" -> 0
+    "홍조쓰" -> 2
+    "애옹쓰" -> 1
+    "새싹쓰" -> 3
+    else -> 0
+}
+
+var imageState = 0
+fun imageTheme(state: Int) {
+    imageState = state
+}
 
 fun Mood.toBigImage() =
     when (this) {
-        Mood.WORST -> R.drawable.very_bad_big
-        Mood.BAD -> R.drawable.bad_big
-        Mood.NOT_BAD -> R.drawable.normal_big
-        Mood.FINE -> R.drawable.good_big
-        else -> R.drawable.very_good_big
+        Mood.WORST -> bigImageList[imageState][0]
+        Mood.BAD -> bigImageList[imageState][1]
+        Mood.NOT_BAD -> bigImageList[imageState][2]
+        Mood.FINE -> bigImageList[imageState][3]
+        else -> bigImageList[imageState][4]
+    }
+
+fun Mood.toGrayImage() =
+    when (this) {
+        Mood.WORST -> grayImageList[imageState][0]
+        Mood.BAD -> grayImageList[imageState][1]
+        Mood.NOT_BAD -> grayImageList[imageState][2]
+        Mood.FINE -> grayImageList[imageState][3]
+        else -> grayImageList[imageState][4]
+    }
+
+fun Mood.toSmallImage() =
+    when (this) {
+        Mood.WORST -> smallImageList[imageState][0]
+        Mood.BAD -> smallImageList[imageState][1]
+        Mood.NOT_BAD -> smallImageList[imageState][2]
+        Mood.FINE -> smallImageList[imageState][3]
+        else -> smallImageList[imageState][4]
     }
 
 fun toFile(context: Context, uri: Uri): File {

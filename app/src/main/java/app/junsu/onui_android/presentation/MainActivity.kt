@@ -14,11 +14,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.junsu.onui.R
 import app.junsu.onui_android.data.api.ApiProvider
+import app.junsu.onui_android.presentation.feature.GraphScreen
 import app.junsu.onui_android.presentation.feature.calendar.CalendarScreen
 import app.junsu.onui_android.presentation.feature.chat.RemindScreen
 import app.junsu.onui_android.presentation.feature.login.LoginScreen
 import app.junsu.onui_android.presentation.feature.main.MainScreen
+import app.junsu.onui_android.presentation.feature.settings.PaletteScreen
 import app.junsu.onui_android.presentation.feature.settings.SettingsScreen
+import app.junsu.onui_android.presentation.feature.settings.ThemeScreen
 import app.junsu.onui_android.presentation.feature.store.MoonStoreScreen
 import app.junsu.onui_android.presentation.feature.store.SunStoreScreen
 import app.junsu.onui_android.presentation.feature.timeline.TimelineDetail
@@ -114,6 +117,15 @@ fun OnuiApp() {
         }
         composable(AppNavigationItem.Settings.route) {
             SettingsScreen(navController = navController)
+        }
+        composable(AppNavigationItem.Palette.route) {
+            PaletteScreen(navController = navController)
+        }
+        composable(AppNavigationItem.Graph.route) {
+            GraphScreen(navController = navController)
+        }
+        composable(AppNavigationItem.Theme.route) {
+            ThemeScreen(navController = navController)
         }
     }
 }

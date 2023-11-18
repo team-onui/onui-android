@@ -3,20 +3,46 @@ package app.junsu.onui_android.presentation.feature.store
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import app.junsu.onui_android.data.api.ApiProvider
-import app.junsu.onui_android.data.request.ProfileRequest
-import app.junsu.onui_android.data.request.ThemeRequest
+import app.junsu.onui_android.data.response.user.AllThemeResponse
+import app.junsu.onui_android.data.response.user.BuyThemeResponse
+import app.junsu.onui_android.data.response.user.ThemeResponse
 
-class SunStoreViewModel: ViewModel() {
+class SunStoreViewModel : ViewModel() {
 
-    var profile = ProfileRequest("","","",false)
-    suspend fun changeTheme(text: String) {
+    var theme: BuyThemeResponse = BuyThemeResponse(listOf())
+
+    var themeList = AllThemeResponse(listOf())
+
+    var rice = ""
+
+    suspend fun buyTheme(id: String) {
         kotlin.runCatching {
-            ApiProvider.userApi().changeTheme(ThemeRequest(text))
+            ApiProvider.userApi().buyTheme(id)
         }.onSuccess {
-            profile = it
-            Log.d("profile",profile.toString())
+            theme = it
         }.onFailure {
-            Log.d("fail",it.toString())
+            Log.d("fail", it.toString())
+        }
+    }
+
+    suspend fun fetchRice() {
+        kotlin.runCatching {
+            ApiProvider.userApi().fetchRice()
+        }.onSuccess {
+            rice = it.rice
+        }.onFailure {
+            Log.d("fail", it.toString())
+        }
+    }
+
+    suspend fun fetchAllTheme() {
+        kotlin.runCatching {
+            ApiProvider.userApi().fetchAllTheme()
+        }.onSuccess {
+            themeList = it
+            Log.d("it",it.toString())
+        }.onFailure {
+            Log.d("fail", it.toString())
         }
     }
 }

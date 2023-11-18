@@ -1,10 +1,10 @@
 package app.junsu.onui_android.presentation.feature.timeline
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -31,10 +32,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
 import androidx.navigation.NavController
 import app.junsu.onui.R
 import app.junsu.onui_android.presentation.component.Header
@@ -54,30 +57,39 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
+
+fun filterBadWords(input: String, badWords: List<String>): String {
+    var filteredInput = input
+
+    for (badWord in badWords) {
+        val regex = Regex("\\b${badWord.replace(" ", "\\s+")}\\b", RegexOption.IGNORE_CASE)
+        filteredInput = regex.replace(filteredInput, "*".repeat(badWord.length))
+    }
+
+    return filteredInput
+}
+
 @Composable
 fun TimelineDetail(
     navController: NavController,
     viewModel: TimelineViewModel,
 ) {
-    val date = LocalDate.now().dayOfMonth
-    val month = LocalDate.now().monthValue
     val lazyListState = rememberLazyListState()
     var text by remember { mutableStateOf("") }
     LaunchedEffect(Unit) {
         viewModel.fetchTimelineComment()
     }
-    Log.d("view", viewModel.timeline.content.toString())
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(gray3)
     ) {
         Header(
-            title = viewModel.timeline.content?.get(0)?.writer ?: "ㅁㄴㅇ",
+            title = viewModel.timeline.content?.get(index = viewModel.index)?.writer ?: "ㅁㄴㅇ",
             modifier = Modifier.clickable { navController.popBackStack() }
         )
         Text(
-            text = "${month}월 ${date}일",
+            text = "${viewModel.fetchDate.monthValue}월 ${viewModel.fetchDate.dayOfMonth}일",
             style = title2,
             modifier = Modifier
                 .fillMaxWidth()
@@ -85,11 +97,11 @@ fun TimelineDetail(
             textAlign = TextAlign.Center,
         )
         ContentDetail(
-            title = viewModel.timeline.content!![0].writer,
-            content = viewModel.timeline.content!![0].content,
-            count = viewModel.timeline.content!![0].commentCount,
-            moods = viewModel.timeline.content!![0].tagList,
-            img = viewModel.timeline.content!![0].image,
+            title = viewModel.timeline.content!![viewModel.index].writer,
+            content = viewModel.timeline.content!![viewModel.index].content,
+            count = viewModel.timeline.content!![viewModel.index].commentCount,
+            moods = viewModel.timeline.content!![viewModel.index].tagList,
+            img = viewModel.timeline.content!![viewModel.index].image,
         )
         LazyColumn(
             state = lazyListState,
@@ -100,14 +112,30 @@ fun TimelineDetail(
         ) {
             var commentCount = 0
             items(items = viewModel.timelineComment.orEmpty()) {
-                Chat(text = viewModel.timelineComment?.get(commentCount)?.content.toString())
+                Chat(
+                    text = viewModel.timelineComment?.get(commentCount)?.content.toString(),
+                    theme = viewModel.timelineComment?.get(commentCount)?.userTheme.toString(),
+                )
                 commentCount++
             }
         }
-        val list = listOf("fuck", "bitch")
+        val list = listOf(
+            "fuck",
+            "bitch",
+            "shit",
+            "damn",
+            "piss",
+            "pussy",
+            "asshole",
+            "sex",
+            "fucking",
+            "Fuck",
+        )
+        val filteredString = filterBadWords(text, list)
+
         Row(modifier = Modifier.background(surface)) {
             BasicTextField(
-                value = if (text == "fuck") "****" else text,
+                value = if (list.contains(text)) filteredString else text,
                 textStyle = body2,
                 onValueChange = { text = it },
                 modifier = Modifier
@@ -145,16 +173,30 @@ fun TimelineDetail(
 }
 
 @Composable
-fun Chat(text: String) {
+fun Chat(text: String, theme: String) {
     Row(
         modifier = Modifier.padding(bottom = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.chat_icon),
-            contentDescription = "chatIcon",
-            modifier = Modifier.padding(end = 8.dp)
-        )
+        Box(modifier = Modifier.padding(8.dp)) {
+            val color = if (theme.isNotBlank()) Color(("#$theme").toColorInt()) else primary
+            Icon(
+                painter = painterResource(id = R.drawable.chat_onui_body),
+                contentDescription = "blank",
+                tint = color,
+                modifier = Modifier
+                    .size(44.dp)
+                    .align(Alignment.TopCenter)
+            )
+            Image(
+                painter = painterResource(id = R.drawable.eye),
+                contentDescription = "eye",
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(6.dp)
+                    .size(16.dp)
+            )
+        }
         Text(
             text = text,
             style = body2,

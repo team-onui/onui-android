@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.junsu.onui.R
 import app.junsu.onui_android.presentation.navigation.AppNavigationItem
@@ -51,6 +52,13 @@ import com.google.accompanist.pager.rememberPagerState
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(navController: NavController) {
+    val weekViewModel: WeekViewModel = viewModel()
+    val taskViewModel: TaskViewModel = viewModel()
+
+    LaunchedEffect(Unit) {
+        weekViewModel.fetchTheme()
+        taskViewModel.fetchTask()
+    }
 
     Scaffold(
         bottomBar = {
@@ -102,7 +110,7 @@ fun BottomSheetScaffold(navController: NavController) {
                 TaskScreen()
             }
         },
-        sheetPeekHeight = 220.dp,
+        sheetPeekHeight = 210.dp,
         containerColor = backgroundVariant,
         sheetSwipeEnabled = true,
         sheetContainerColor = background,
@@ -205,13 +213,14 @@ fun BottomSheetContent(navController: NavController) {
                             .weight(1f)
                             .aspectRatio(1f)
                             .clip(RoundedCornerShape(32.dp))
-                            .background(surface),
+                            .background(surface)
+                            .clickable { navController.navigate(AppNavigationItem.Graph.route) },
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.mdi_chart_donut),
                             contentDescription = "chart",
-                            alignment = Alignment.Center
+                            alignment = Alignment.Center,
                         )
                     }
                     Spacer(modifier = Modifier.size(8.dp))

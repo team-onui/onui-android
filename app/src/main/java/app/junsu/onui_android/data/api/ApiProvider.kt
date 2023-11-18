@@ -6,13 +6,10 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
-import java.lang.reflect.Type
 
 object ApiProvider {
     private var BASE_URL = "https://onui.kanghyuk.co.kr/"
@@ -74,4 +71,6 @@ object ApiProvider {
     }
 
     fun userApi(): UserApi = getRetrofit().create(UserApi::class.java)
+
+    fun missionApi(): MissionApi = getRetrofit().create(MissionApi::class.java)
 }

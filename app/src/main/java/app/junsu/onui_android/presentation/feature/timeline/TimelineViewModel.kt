@@ -9,17 +9,15 @@ import app.junsu.onui_android.data.response.timeline.TimelineCommentResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class TimelineViewModel : ViewModel() {
 
     var timeline = TimeLineResponse(listOf(), true)
     var timelineComment = TimelineCommentResponse(listOf()).commentList
+    var fetchDate = LocalDate.now()
+    var index = 0
 
-    //    init {
-//        CoroutineScope(Dispatchers.IO).launch {
-//            fetchTimeLine(idx = 1, size = 1, date = LocalDate.now().toString())
-//        }
-//    }
     suspend fun fetchTimeLine(
         idx: Int,
         size: Int,
@@ -44,12 +42,11 @@ class TimelineViewModel : ViewModel() {
     suspend fun fetchTimelineComment() {
         CoroutineScope(Dispatchers.IO).launch {
             kotlin.runCatching {
-                ApiProvider.timelineApi().fetchComment(timeline_id = timeline.content!![0].id)
+                ApiProvider.timelineApi().fetchComment(timeline_id = timeline.content!![index].id)
             }.onSuccess {
                 timelineComment = it.commentList
                 Log.d("success", it.toString())
             }.onFailure {
-                Log.d("id ", timeline.content!![0].id.toString())
                 Log.d("fail", it.toString())
             }
         }

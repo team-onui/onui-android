@@ -19,4 +19,10 @@ sealed class AppNavigationItem(val route: String) {
     object MoonStore: AppNavigationItem("moonStore")
 
     object Settings: AppNavigationItem("settings")
+
+    object Palette: AppNavigationItem("palette")
+
+    object Graph: AppNavigationItem("graph")
+
+    object Theme: AppNavigationItem("theme")
 }

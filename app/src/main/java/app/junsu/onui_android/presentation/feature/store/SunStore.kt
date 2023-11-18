@@ -1,21 +1,28 @@
 package app.junsu.onui_android.presentation.feature.store
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,9 +36,12 @@ import app.junsu.onui_android.presentation.component.Header
 import app.junsu.onui_android.presentation.ui.theme.body2
 import app.junsu.onui_android.presentation.ui.theme.gray3
 import app.junsu.onui_android.presentation.ui.theme.onPrimaryContainer
+import app.junsu.onui_android.presentation.ui.theme.onSurface
+import app.junsu.onui_android.presentation.ui.theme.primary
 import app.junsu.onui_android.presentation.ui.theme.primaryContainer
 import app.junsu.onui_android.presentation.ui.theme.surface
 import app.junsu.onui_android.presentation.ui.theme.title2
+import app.junsu.onui_android.sproutImages
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,67 +49,81 @@ import kotlinx.coroutines.launch
 @Composable
 fun SunStoreScreen(navController: NavController) {
     val viewModel: SunStoreViewModel = viewModel()
-    val sproutImages = listOf(
-        R.drawable.sprout_good,
-        R.drawable.sprout_fine,
-        R.drawable.sprout_normal,
-        R.drawable.sprout_green,
-        R.drawable.sprout_bad,
-    )
-    val flushingImages = listOf(
-        R.drawable.flushing_good,
-        R.drawable.flushing_fine,
-        R.drawable.flushing_normal,
-        R.drawable.flushing_bad,
-        R.drawable.flushing_very_bad,
-    )
 
-    val catImages = listOf(
-        R.drawable.cat_good,
-        R.drawable.cat_fine,
-        R.drawable.cat_normal,
-        R.drawable.cat_bad,
-        R.drawable.cat_very_bad,
-    )
+    LaunchedEffect(Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            viewModel.fetchRice()
+            viewModel.fetchAllTheme()
+        }
+    }
+    val themes: MutableList<String> = remember { mutableStateListOf() }
+    Log.d("themes", themes.toString())
+    for (i in 0..viewModel.themeList.themeList.size - 1) {
+        if (!viewModel.themeList.themeList[i].isBought) {
+            themes.add(viewModel.themeList.themeList[i].theme)
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(gray3)
     ) {
         Header(title = "햇님 방앗간", modifier = Modifier.clickable { navController.popBackStack() })
-        Object(
-            title = "새싹쓰",
-            images = sproutImages,
-            onClick = {
-                CoroutineScope(Dispatchers.IO).launch {
-                    viewModel.changeTheme("새싹쓰")
-                }
-            },
-        )
-        Object(
-            title = "홍조쓰",
-            images = flushingImages,
-            onClick = {
-                CoroutineScope(Dispatchers.IO).launch {
-                    viewModel.changeTheme("홍조쓰")
-                }
-            },
-        )
-        Object(
-            title = "애옹쓰",
-            images = catImages,
-            onClick = {
-                CoroutineScope(Dispatchers.IO).launch {
-                    viewModel.changeTheme("애옹쓰")
-                }
-            },
-        )
+        Row(
+            modifier = Modifier
+                .padding(
+                    top = 12.dp,
+                    start = 8.dp,
+                    end = 8.dp,
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.chat_icon),
+                contentDescription = "blank",
+                modifier = Modifier
+                    .size(44.dp)
+                    .padding(8.dp)
+            )
+            Text(
+                text = "남은 쌀은 ${viewModel.rice}개 에요",
+                style = body2,
+                color = onSurface,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(surface)
+                    .padding(6.dp)
+            )
+        }
+        if (viewModel.themeList.themeList.isNotEmpty()) {
+            Log.d("theme", "${themes},${viewModel.themeList}")
+            viewModel.themeList.themeList.forEachIndexed { index, s ->
+                Object(
+                    title = s.theme,
+                    images = sproutImages,
+                    onClick = {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            viewModel.buyTheme(s.theme)
+                            viewModel.fetchRice()
+                        }
+                    },
+                    state = themes.contains(s.theme),
+                    price = viewModel.themeList.themeList[index].price.toString()
+                )
+            }
+        }
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun Object(title: String, images: List<Int>, onClick: () -> Unit) {
+fun Object(
+    title: String,
+    images: List<Int>,
+    onClick: () -> Unit,
+    state: Boolean,
+    price: String,
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -138,13 +162,18 @@ fun Object(title: String, images: List<Int>, onClick: () -> Unit) {
                 modifier = Modifier
                     .padding(bottom = 12.dp, end = 16.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(primaryContainer)
+                    .border(
+                        width = 1.dp,
+                        shape = RoundedCornerShape(12.dp),
+                        color = if (!state) primary else primaryContainer
+                    )
+                    .background(if (!state) surface else primaryContainer)
                     .align(Alignment.End)
             ) {
                 Text(
-                    text = "적용하기",
+                    text = if (!state) "구매완료" else price,
                     style = body2,
-                    color = onPrimaryContainer,
+                    color = if (!state) primary else onPrimaryContainer,
                     modifier = Modifier
                         .padding(
                             horizontal = 8.dp,

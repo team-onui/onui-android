@@ -1,7 +1,6 @@
 package app.junsu.onui_android.data.api
 
 import app.junsu.onui_android.data.request.CommentRequest
-import app.junsu.onui_android.data.response.timeline.CommentResponse
 import app.junsu.onui_android.data.response.timeline.TimeLineResponse
 import app.junsu.onui_android.data.response.timeline.TimelineCommentResponse
 import retrofit2.http.Body

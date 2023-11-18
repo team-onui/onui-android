@@ -2,7 +2,6 @@ package app.junsu.onui_android.presentation.feature.login
 
 import android.app.Application
 import android.content.Intent
-import android.provider.Settings.Global.getString
 import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher

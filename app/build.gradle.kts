@@ -82,4 +82,9 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation(libs.play.services.auth)
     implementation(libs.coil.compose)
+    implementation(libs.androidx.palette.ktx)
+    implementation(libs.compose)
+    implementation(libs.compose.m3)
+    implementation(libs.core)
+    implementation(libs.views)
 }

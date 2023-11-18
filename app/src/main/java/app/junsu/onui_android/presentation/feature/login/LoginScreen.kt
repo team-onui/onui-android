@@ -219,10 +219,10 @@ fun LoginScreen(navController: NavController) {
                             viewModel.performGoogleSignIn(googleAuthLauncher)
                             delay(3000)
                             kotlin.runCatching {
-                                    ApiProvider
-                                        .loginApi()
-                                        .getToken()
-                                }
+                                ApiProvider
+                                    .loginApi()
+                                    .getToken()
+                            }
                                 .onSuccess {
                                     token = it
                                     sharedPreferences

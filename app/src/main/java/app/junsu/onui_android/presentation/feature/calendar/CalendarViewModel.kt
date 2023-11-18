@@ -20,9 +20,6 @@ class CalendarViewModel : ViewModel() {
     var mood: MonthResponse = MonthResponse(listOf())
 
     var fetchDiaryState = false
-
-    //lateinit var dayDiary: RemindResponse
-    //= RemindResponse(null,"",Mood.BAD, listOf(),"","")
     suspend fun fetchMonthDiary(sharedPreferences: SharedPreferences) {
         kotlin.runCatching {
             ApiProvider.diaryApi().fetchMonthDiary(currentYear.value, currentMonth.value)
@@ -42,7 +39,14 @@ class CalendarViewModel : ViewModel() {
         response: (DayDiaryResponse) -> Unit
     ) {
         kotlin.runCatching {
-            ApiProvider.diaryApi().fetchDayDiary(date = "${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}")
+            ApiProvider.diaryApi().fetchDayDiary(
+                date = "${date.substring(0, 4)}-${
+                    date.substring(
+                        4,
+                        6
+                    )
+                }-${date.substring(6, 8)}"
+            )
         }.onSuccess {
             Log.d("성공", it.toString())
             fetchDiaryState = true
