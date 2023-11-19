@@ -90,7 +90,7 @@ class MainActivity : ComponentActivity() {
 fun OnuiApp() {
     val navController = rememberNavController()
     val viewModel: TimelineViewModel = viewModel()
-    NavHost(navController = navController, startDestination = AppNavigationItem.Login.route) {
+    NavHost(navController = navController, startDestination = AppNavigationItem.Graph.route) {
         composable(AppNavigationItem.Login.route) {
             LoginScreen(navController = navController)
         }
