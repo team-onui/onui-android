@@ -16,13 +16,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,11 +37,13 @@ import app.junsu.onui.R
 import app.junsu.onui_android.presentation.component.Header
 import app.junsu.onui_android.presentation.ui.theme.body2
 import app.junsu.onui_android.presentation.ui.theme.gray3
+import app.junsu.onui_android.presentation.ui.theme.headline1
 import app.junsu.onui_android.presentation.ui.theme.onPrimaryContainer
 import app.junsu.onui_android.presentation.ui.theme.onSurface
 import app.junsu.onui_android.presentation.ui.theme.primary
 import app.junsu.onui_android.presentation.ui.theme.primaryContainer
 import app.junsu.onui_android.presentation.ui.theme.surface
+import app.junsu.onui_android.presentation.ui.theme.title1
 import app.junsu.onui_android.presentation.ui.theme.title2
 import app.junsu.onui_android.sproutImages
 import kotlinx.coroutines.CoroutineScope
@@ -50,12 +54,14 @@ import kotlinx.coroutines.launch
 fun SunStoreScreen(navController: NavController) {
     val viewModel: SunStoreViewModel = viewModel()
 
-    LaunchedEffect(Unit) {
+    var update by remember { mutableStateOf(false) }
+    LaunchedEffect(update) {
         CoroutineScope(Dispatchers.IO).launch {
             viewModel.fetchRice()
             viewModel.fetchAllTheme()
         }
     }
+    update = true
     val themes: MutableList<String> = remember { mutableStateListOf() }
     Log.d("themes", themes.toString())
     for (i in 0..viewModel.themeList.themeList.size - 1) {
@@ -69,47 +75,57 @@ fun SunStoreScreen(navController: NavController) {
             .background(gray3)
     ) {
         Header(title = "햇님 방앗간", modifier = Modifier.clickable { navController.popBackStack() })
-        Row(
+        Column(
             modifier = Modifier
-                .padding(
-                    top = 12.dp,
-                    start = 8.dp,
-                    end = 8.dp,
-                ),
-            verticalAlignment = Alignment.CenterVertically,
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 12.dp)
+                .height(120.dp)
+                .clip(RoundedCornerShape(24.dp))
+                .background(surface)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.chat_icon),
-                contentDescription = "blank",
-                modifier = Modifier
-                    .size(44.dp)
-                    .padding(8.dp)
-            )
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "쌀",
+                    color = onSurface,
+                    style = title1,
+                    modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+                )
+                Image(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 16.dp),
+                    painter = painterResource(id = R.drawable.ssal),
+                    contentDescription = "ssal",
+                    alignment = Alignment.CenterEnd
+                )
+            }
             Text(
-                text = "남은 쌀은 ${viewModel.rice}개 에요",
-                style = body2,
+                text = viewModel.rice + "톨",
                 color = onSurface,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(surface)
-                    .padding(6.dp)
+                style = headline1,
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
             )
         }
         if (viewModel.themeList.themeList.isNotEmpty()) {
-            Log.d("theme", "${themes},${viewModel.themeList}")
             viewModel.themeList.themeList.forEachIndexed { index, s ->
-                Object(
-                    title = s.theme,
-                    images = sproutImages,
-                    onClick = {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            viewModel.buyTheme(s.theme)
-                            viewModel.fetchRice()
+                if (s.theme != "default") {
+                    Object(
+                        title = s.theme,
+                        images = sproutImages,
+                        onClick = {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                viewModel.buyTheme(s.theme)
+                                viewModel.fetchRice()
+                            }
+                        },
+                        state = themes.contains(s.theme),
+                        price = viewModel.themeList.themeList[index].price.toString() + "톨",
+                        update = update,
+                        chaneUpdate = {
+                            update = it
                         }
-                    },
-                    state = themes.contains(s.theme),
-                    price = viewModel.themeList.themeList[index].price.toString()
-                )
+                    )
+                }
             }
         }
     }
@@ -123,11 +139,13 @@ fun Object(
     onClick: () -> Unit,
     state: Boolean,
     price: String,
+    update: Boolean,
+    chaneUpdate: (Boolean) -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
+            .padding(start = 8.dp, end = 8.dp, bottom = 12.dp)
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -179,7 +197,10 @@ fun Object(
                             horizontal = 8.dp,
                             vertical = 4.dp,
                         )
-                        .clickable { onClick() }
+                        .clickable {
+                            onClick()
+                            chaneUpdate(!update)
+                        }
                 )
             }
         }

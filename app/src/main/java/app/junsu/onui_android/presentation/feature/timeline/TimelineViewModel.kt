@@ -42,7 +42,7 @@ class TimelineViewModel : ViewModel() {
     suspend fun fetchTimelineComment() {
         CoroutineScope(Dispatchers.IO).launch {
             kotlin.runCatching {
-                ApiProvider.timelineApi().fetchComment(timeline_id = timeline.content!![index].id)
+                ApiProvider.timelineApi().fetchComment(timelineId = timeline.content!![index].id)
             }.onSuccess {
                 timelineComment = it.commentList
                 Log.d("success", it.toString())
@@ -56,7 +56,7 @@ class TimelineViewModel : ViewModel() {
         kotlin.runCatching {
             Log.d("sdf", timeline.content!![0].id.toString())
             ApiProvider.timelineApi().comment(
-                timeline_id = timeline.content!![0].id.toString(),
+                timelineId = timeline.content!![0].id.toString(),
                 commentRequest = CommentRequest(text)
             )
         }.onSuccess {

@@ -1,11 +1,11 @@
 package app.junsu.onui_android.data.api
 
-import app.junsu.onui_android.data.response.user.BuyThemeResponse
 import app.junsu.onui_android.data.request.FilterRequest
 import app.junsu.onui_android.data.request.NameRequest
 import app.junsu.onui_android.data.request.ProfileThemeRequest
 import app.junsu.onui_android.data.request.ThemeRequest
 import app.junsu.onui_android.data.response.user.AllThemeResponse
+import app.junsu.onui_android.data.response.user.BuyThemeResponse
 import app.junsu.onui_android.data.response.user.ProfileResponse
 import app.junsu.onui_android.data.response.user.RiceResponse
 import app.junsu.onui_android.data.response.user.ThemeResponse
@@ -17,9 +17,6 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface UserApi {
-
-    @GET("auth/test")
-    suspend fun getToken(): String
 
     @GET("user/profile")
     suspend fun fetchProfile(): ProfileResponse

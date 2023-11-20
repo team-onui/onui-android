@@ -1,6 +1,8 @@
 package app.junsu.onui_android.data.api
 
+import app.junsu.onui_android.data.request.ChatRequest
 import app.junsu.onui_android.data.request.RemindRequest
+import app.junsu.onui_android.data.response.diary.ChatResponse
 import app.junsu.onui_android.data.response.diary.DayDiaryResponse
 import app.junsu.onui_android.data.response.diary.ImageResponse
 import app.junsu.onui_android.data.response.diary.MonthResponse
@@ -39,4 +41,9 @@ interface DiaryApi {
     suspend fun fetchDayDiary(
         @Query("date") date: String,
     ): DayDiaryResponse
+
+    @POST("diary/chat")
+    suspend fun fetchChat(
+        @Body chatRequest: ChatRequest
+    ): ChatResponse
 }

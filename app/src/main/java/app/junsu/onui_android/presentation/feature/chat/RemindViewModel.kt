@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import app.junsu.onui_android.Mood
 import app.junsu.onui_android.data.api.ApiProvider
+import app.junsu.onui_android.data.request.ChatRequest
 import app.junsu.onui_android.data.request.RemindRequest
+import app.junsu.onui_android.data.response.diary.ChatResponse
 import app.junsu.onui_android.data.response.user.ProfileResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +15,7 @@ import kotlinx.coroutines.launch
 class RemindViewModel : ViewModel() {
 
     var profile = ProfileResponse("", "", "", "", false)
+    var chatResponse = ChatResponse("")
 
     suspend fun fetchProfile() {
         kotlin.runCatching {
@@ -46,6 +49,17 @@ class RemindViewModel : ViewModel() {
             }.onFailure {
                 Log.d("TEST", it.toString())
             }
+        }
+    }
+
+    suspend fun fetchChat(tagList: List<String>) {
+        kotlin.runCatching {
+            ApiProvider.diaryApi().fetchChat(ChatRequest(tagList))
+        }.onSuccess {
+            chatResponse = it
+            Log.d("it",it.message)
+        }.onFailure {
+            Log.d("fail", it.toString())
         }
     }
 }

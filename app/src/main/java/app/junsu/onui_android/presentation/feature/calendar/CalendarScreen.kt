@@ -1,6 +1,5 @@
 package app.junsu.onui_android.presentation.feature.calendar
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -39,6 +38,7 @@ import app.junsu.onui_android.presentation.ui.theme.primary
 import app.junsu.onui_android.presentation.ui.theme.surface
 import app.junsu.onui_android.presentation.ui.theme.title2
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.flowlayout.FlowRow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,30 +49,21 @@ fun CalendarScreen(
     val viewModel: CalendarViewModel = viewModel()
     val sheetState = rememberBottomSheetScaffoldState()
     var date by remember { mutableStateOf("LocalDate.now()") }
-    var fetchDairyState by remember { mutableStateOf(false) }
-    var dayDairy: DayDiaryResponse? by remember { mutableStateOf(null) }
-    val fetchDayDairyState by remember { mutableStateOf(viewModel.fetchDiaryState) }
+    var dayDiary: DayDiaryResponse? by remember { mutableStateOf(null) }
 
-    if (fetchDairyState) {
-        LaunchedEffect(date) {
-            viewModel.fetchDiary(date = date, response = {
-                dayDairy = it
-            })
-        }
+    LaunchedEffect(date) {
+        viewModel.fetchDiary(date = date, dayDiaryChange = { dayDiary = it })
     }
     BottomSheetScaffold(
         modifier = Modifier.fillMaxSize(),
         scaffoldState = sheetState,
         sheetContent = {
-            Log.d("fetch", fetchDayDairyState.toString())
-            if (dayDairy?.content?.isNotEmpty() == true) {
-                Content(
-                    date = dayDairy!!.createdAt.toString(),
-                    content = dayDairy!!.content!!,
-                    moods = dayDairy!!.tagList,
-                    img = dayDairy!!.image,
-                )
-            }
+            Content(
+                date = date,
+                content = dayDiary?.content.toString(),
+                moods = dayDiary?.tagList ?: listOf(),
+                img = dayDiary?.image,
+            )
         },
         sheetPeekHeight = 220.dp,
         sheetContainerColor = surface,
@@ -89,8 +80,7 @@ fun CalendarScreen(
             )
             Calendar(
                 modifier = Modifier,
-                onClick = { fetchDairyState = it },
-                fetchDate = { date = it }
+                fetchDate = { date = it },
             )
         }
     }
@@ -119,20 +109,22 @@ fun Content(
             color = Color.Black,
             textAlign = TextAlign.Center,
         )
-        AsyncImage(
-            model = img,
-            contentDescription = null,
-            modifier = Modifier
-                .padding(
-                    bottom = 8.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                )
-                .fillMaxWidth()
-                .height(160.dp)
-                .clip(RoundedCornerShape(16.dp)),
-            contentScale = ContentScale.Crop,
-        )
+        if (img != null) {
+            AsyncImage(
+                model = img,
+                contentDescription = "img",
+                modifier = Modifier
+                    .padding(
+                        bottom = 8.dp,
+                        start = 16.dp,
+                        end = 16.dp,
+                    )
+                    .fillMaxWidth()
+                    .height(160.dp)
+                    .clip(RoundedCornerShape(16.dp)),
+                contentScale = ContentScale.Crop,
+            )
+        }
         FlowRow(
             modifier = Modifier
                 .fillMaxWidth()

@@ -22,6 +22,8 @@ sealed class AppNavigationItem(val route: String) {
 
     object Palette: AppNavigationItem("palette")
 
+    object Task: AppNavigationItem("task")
+
     object Graph: AppNavigationItem("graph")
 
     object Theme: AppNavigationItem("theme")

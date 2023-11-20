@@ -117,7 +117,12 @@ fun ThemeScreen(navController: NavController) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun Object(title: String, images: List<Int>, onClick: () -> Unit, check: Boolean) {
+fun Object(
+    title: String,
+    images: List<Int>,
+    onClick: () -> Unit,
+    check: Boolean,
+) {
     Text(
         modifier = Modifier.fillMaxWidth(),
         text = title,
@@ -173,7 +178,9 @@ fun Object(title: String, images: List<Int>, onClick: () -> Unit, check: Boolean
                             horizontal = 8.dp,
                             vertical = 4.dp,
                         )
-                        .clickable { onClick() }
+                        .clickable {
+                            onClick()
+                        }
                 )
             }
         }

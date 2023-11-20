@@ -9,6 +9,7 @@ import app.junsu.onui_android.data.api.ApiProvider
 import app.junsu.onui_android.data.response.diary.DayDiaryResponse
 import app.junsu.onui_android.data.response.diary.MonthResponse
 import java.time.LocalDate
+import java.time.Month
 
 class CalendarViewModel : ViewModel() {
     private val _currentYear = mutableIntStateOf(LocalDate.now().year)
@@ -19,25 +20,17 @@ class CalendarViewModel : ViewModel() {
 
     var mood: MonthResponse = MonthResponse(listOf())
 
-    var fetchDiaryState = false
-    suspend fun fetchMonthDiary(sharedPreferences: SharedPreferences) {
+    suspend fun fetchMonthDiary(month: Int) {
         kotlin.runCatching {
-            ApiProvider.diaryApi().fetchMonthDiary(currentYear.value, currentMonth.value)
+            ApiProvider.diaryApi().fetchMonthDiary(currentYear.value, month)
         }.onSuccess {
             mood = it
-            Log.d("it", it.toString())
-            if (it.diaries[0].id.toString() != "") {
-                sharedPreferences.edit().putString("id", it.diaries[0].id.toString()).apply()
-            }
         }.onFailure {
             Log.d("fail", it.toString())
         }
     }
 
-    suspend fun fetchDiary(
-        date: String,
-        response: (DayDiaryResponse) -> Unit
-    ) {
+    suspend fun fetchDiary(date: String, dayDiaryChange: (DayDiaryResponse) -> Unit) {
         kotlin.runCatching {
             ApiProvider.diaryApi().fetchDayDiary(
                 date = "${date.substring(0, 4)}-${
@@ -49,8 +42,7 @@ class CalendarViewModel : ViewModel() {
             )
         }.onSuccess {
             Log.d("성공", it.toString())
-            fetchDiaryState = true
-            response(it)
+            dayDiaryChange(it)
         }.onFailure {
             Log.d("실패", it.toString())
         }

@@ -1,4 +1,4 @@
-package app.junsu.onui_android.presentation.feature
+package app.junsu.onui_android.presentation.feature.graph
 
 import android.graphics.Paint
 import androidx.compose.foundation.Canvas
@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -32,7 +33,10 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import app.junsu.onui_android.data.response.Analysis.AnalysisMonthlyResponse
+import app.junsu.onui_android.data.response.Analysis.AnalysisMoodResponse
 import app.junsu.onui_android.presentation.component.Header
 import app.junsu.onui_android.presentation.component.ToggleButton
 import app.junsu.onui_android.presentation.ui.theme.gray3
@@ -44,6 +48,11 @@ import kotlin.math.roundToInt
 @Composable
 fun GraphScreen(navController: NavController) {
     var pageNum by rememberSaveable { mutableIntStateOf(0) }
+    val viewModel: GraphViewModel = viewModel()
+    LaunchedEffect(Unit) {
+        viewModel.fetchAnalysis()
+        viewModel.fetchAnalysisMonthly()
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -63,14 +72,20 @@ fun GraphScreen(navController: NavController) {
             ) {
                 pageNum = it
             }
-            if (pageNum == 0) MaxMood() else MonthMood()
+            if (pageNum == 0) MaxMood(viewModel.analysisMoodResponse) else MonthMood(viewModel.analysisMonthlyResponse)
         }
     }
 }
 
 @Composable
-fun MaxMood() {
-    val data = listOf(20f, 40f, 60f, 40f, 30f)
+fun MaxMood(analysisMoodResponse: AnalysisMoodResponse) {
+    val data = listOf(
+        analysisMoodResponse.good.toFloat(),
+        analysisMoodResponse.fine.toFloat(),
+        analysisMoodResponse.notBad.toFloat(),
+        analysisMoodResponse.bad.toFloat(),
+        analysisMoodResponse.worst.toFloat(),
+    )
     val labels = listOf("매우 좋음", "좋음", "보통", "나쁨", "매우 나쁨")
 
     Box(
@@ -88,8 +103,43 @@ fun MaxMood() {
 }
 
 @Composable
-fun MonthMood() {
-    LineGraph()
+fun MonthMood(analysisMonthlyResponse: AnalysisMonthlyResponse) {
+    val list = listOf(10f, 30f, 3f, 1f)
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+    ) {
+        val zipList: List<Pair<Float, Float>> = list.zipWithNext()
+        val max = list.max()
+        val min = list.min()
+
+        val lineColor =
+            if (list.last() > list.first()) primary else outline
+
+        for (pair in zipList) {
+
+            val fromValuePercentage = getValuePercentageForRange(pair.first, max, min)
+            val toValuePercentage = getValuePercentageForRange(pair.second, max, min)
+
+            Canvas(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f),
+                onDraw = {
+                    val fromPoint =
+                        Offset(x = 0f, y = size.height.times(1 - fromValuePercentage))
+                    val toPoint =
+                        Offset(x = size.width, y = size.height.times(1 - toValuePercentage))
+
+                    drawLine(
+                        color = lineColor,
+                        start = fromPoint,
+                        end = toPoint,
+                        strokeWidth = 3f
+                    )
+                })
+        }
+    }
 }
 
 fun DrawScope.drawChart(data: List<Float>, labels: List<String>, size: Size) {
@@ -128,9 +178,7 @@ fun DrawScope.drawChart(data: List<Float>, labels: List<String>, size: Size) {
 
         drawIntoCanvas {
             val text = labels.getOrElse(index) { "" }
-            val paint = Paint().apply {
-                textSize = 34f
-            }
+            val paint = Paint().apply { textSize = 34f }
             val labelX = xPosition + barWidth / 2 - padding * 2
             val labelY = padding + height + 34f
             it.nativeCanvas.drawText(text, labelX, labelY, paint)
@@ -142,49 +190,9 @@ fun DrawScope.drawChart(data: List<Float>, labels: List<String>, size: Size) {
         val xPosition = padding * 2 + (height - index * height / 5)
         drawIntoCanvas {
             val text = buildAnnotatedString {
-                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(label)
-                }
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(label) }
             }
-            it.nativeCanvas.drawText(text.text, padding, xPosition, Paint().apply {
-                textSize = 30f
-            })
-        }
-    }
-}
-
-@Composable
-fun LineGraph(modifier: Modifier = Modifier, list: List<Float> = listOf(10f, 30f, 3f, 1f)) {
-    val zipList: List<Pair<Float, Float>> = list.zipWithNext()
-
-    Row(modifier = modifier) {
-        val max = list.max()
-        val min = list.min()
-
-        val lineColor =
-            if (list.last() > list.first()) primary else outline
-
-        for (pair in zipList) {
-
-            val fromValuePercentage = getValuePercentageForRange(pair.first, max, min)
-            val toValuePercentage = getValuePercentageForRange(pair.second, max, min)
-
-            Canvas(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f),
-                onDraw = {
-                    val fromPoint = Offset(x = 0f, y = size.height.times(1 - fromValuePercentage))
-                    val toPoint =
-                        Offset(x = size.width, y = size.height.times(1 - toValuePercentage))
-
-                    drawLine(
-                        color = lineColor,
-                        start = fromPoint,
-                        end = toPoint,
-                        strokeWidth = 3f
-                    )
-                })
+            it.nativeCanvas.drawText(text.text, padding, xPosition, Paint().apply { textSize = 30f })
         }
     }
 }

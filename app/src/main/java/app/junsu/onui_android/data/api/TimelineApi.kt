@@ -19,12 +19,12 @@ interface TimelineApi {
 
     @GET("comment")
     suspend fun fetchComment(
-        @Query("timeline_id") timeline_id: UUID,
+        @Query("timeline_id") timelineId: UUID,
     ): TimelineCommentResponse
 
     @POST("comment")
     suspend fun comment(
-        @Query("timeline_id") timeline_id: String,
+        @Query("timeline_id") timelineId: String,
         @Body commentRequest: CommentRequest,
     ): TimelineCommentResponse.Comment
 }

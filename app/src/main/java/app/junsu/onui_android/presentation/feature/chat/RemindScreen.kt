@@ -99,7 +99,13 @@ fun RemindScreen(navController: NavController) {
     val selectedMood: MutableList<String> = remember { mutableStateListOf() }
     var viewState by remember { mutableIntStateOf(0) }
     var feelMessage by remember { mutableIntStateOf(0) }
-    val feelChat = listOf("a", "b", "c", "d", "e")
+    val feelChat = listOf(
+        "기분이 좋으시다니 다행이에요☺️",
+        "기분이 좋으시다니 다행이에요😊",
+        "가벼운 산책은 어떤가요?",
+        "기분이 좋아지시길 바래요\uD83E\uDD72",
+        "기분이 좋아지시길 바래요\uD83E\uDD72",
+    )
     var viewLate by remember { mutableIntStateOf(0) }
     var selectImage by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
@@ -138,28 +144,50 @@ fun RemindScreen(navController: NavController) {
                 )
             }
             if (viewState > 0) {
-                Chat(
-                    text = "그렇군요, 오늘 하루 수고 많으셨어요.\n${feelChat[feelMessage]}\n어떤 감정을 느끼셨나요?",
-                    viewLate = { viewLate += it },
-                    theme = viewModel.profile.profileTheme,
-                )
-                if (viewLate >= 2) {
-                    TodayMood(
-                        selectedMoods = selectedMood,
-                        selectedMoodChange = {
-                            if (!selectedMood.contains(it)) selectedMood.add(it)
-                        },
-                        viewStateChange = { if (viewState < 2) viewState = it },
-                        selectedMoodDelete = {
-                            selectedMood.remove(it)
-                        }
+                Column {
+                    Chat(
+                        text = "그렇군요, 오늘 하루 수고 많으셨어요.\n${feelChat[feelMessage]}\n어떤 감정을 느끼셨나요?",
+                        viewLate = { viewLate += it },
+                        theme = viewModel.profile.profileTheme,
                     )
-                    selectedMood.forEach { selectMoods.add(it) }
+                    if (viewLate >= 2) {
+                        TodayMood(
+                            selectedMoods = selectedMood,
+                            selectedMoodChange = {
+                                if (!selectedMood.contains(it)) selectedMood.add(it)
+                            },
+                            viewStateChange = {  },
+                            selectedMoodDelete = {
+                                selectedMood.remove(it)
+                            }
+                        )
+                        selectedMood.forEach { selectMoods.add(it) }
+                    }
+                    Button(
+                        onClick = {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                viewModel.fetchChat(selectedMood)
+                                if (viewState < 2) viewState = 2
+                            }
+                        },
+                        modifier = Modifier
+                            .padding(top = 8.dp, end = 16.dp, start = 16.dp)
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(24.dp))
+                            .background(primaryContainer),
+                        colors = ButtonDefaults.buttonColors(primaryContainer)
+                    ) {
+                        Text(
+                            text = "선택완료",
+                            style = body2,
+                            color = onPrimaryContainer,
+                        )
+                    }
                 }
             }
             if (viewState > 1) {
                 Chat(
-                    text = "무슨 일이 있었는지 알려주세요.",
+                    text = "${viewModel.chatResponse.message}\n무슨 일이 있었는지 알려주세요.",
                     viewLate = { viewLate += it },
                     theme = viewModel.profile.profileTheme,
                 )

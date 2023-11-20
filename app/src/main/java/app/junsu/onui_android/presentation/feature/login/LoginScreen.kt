@@ -67,11 +67,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun LoginScreen(navController: NavController) {
     val context = LocalContext.current
+    val pagerState = rememberPagerState()
+    val pager = listOf("a", "b", "c", "d")
+    val viewModel: LoginViewModel = viewModel()
+    var token by remember { mutableStateOf("") }
+    val sharedPreferences = context.getSharedPreferences("my_shared_prefs", Context.MODE_PRIVATE)
 
     fun getGoogleClient(): GoogleSignInClient {
         val googleSignInOption =
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestServerAuthCode("797489065606-36a97qn426j75m2cjbnmk34kp71rasst.apps.googleusercontent.com")
                 .requestEmail()
                 .build()
 
@@ -84,13 +88,17 @@ fun LoginScreen(navController: NavController) {
 
             try {
                 val account = task.getResult(ApiException::class.java)
-
-                val userName = account.givenName
-                val serverAuth = account.serverAuthCode
-                Log.d("user", userName.toString())
-                Log.d("server", serverAuth.toString())
-
-
+                if (account.id != null) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        viewModel.login(name = account.givenName!!, sub = account.id!!)
+                        delay(500)
+                        sharedPreferences
+                            .edit()
+                            .putString("token", viewModel.token)
+                            .apply()
+                        token = viewModel.token
+                    }
+                }
             } catch (e: ApiException) {
                 Log.e("fail", e.stackTraceToString())
             }
@@ -104,20 +112,12 @@ fun LoginScreen(navController: NavController) {
     }
 
 
-    val pagerState = rememberPagerState()
-    val pager = listOf("a", "b", "c", "d")
-    val viewModel: LoginViewModel = viewModel()
-    var token by remember { mutableStateOf("") }
-
-    val sharedPreferences = context.getSharedPreferences("my_shared_prefs", Context.MODE_PRIVATE)
-
     LaunchedEffect(token) {
         if (token.isNotBlank()) {
             navController.navigate(AppNavigationItem.Main.route) { popUpTo(0) }
         }
     }
     val list = listOf(R.drawable.img, R.drawable.img_1, R.drawable.img_2, R.drawable.img_3)
-
 
     Column(
         modifier = Modifier
@@ -196,7 +196,6 @@ fun LoginScreen(navController: NavController) {
                                         .edit()
                                         .putString("token", token)
                                         .apply()
-                                    Log.d("token", it)
                                 }
                                 .onFailure {
                                     Log.d("it", it.toString())
@@ -215,26 +214,7 @@ fun LoginScreen(navController: NavController) {
                     subTitle = "인증하기",
                     image = R.drawable.google,
                     onClick = {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            viewModel.performGoogleSignIn(googleAuthLauncher)
-                            delay(3000)
-                            kotlin.runCatching {
-                                ApiProvider
-                                    .loginApi()
-                                    .getToken()
-                            }
-                                .onSuccess {
-                                    token = it
-                                    sharedPreferences
-                                        .edit()
-                                        .putString("token", token)
-                                        .apply()
-                                    Log.d("token", it)
-                                }
-                                .onFailure {
-                                    Log.d("it", it.toString())
-                                }
-                        }
+                        requestGoogleLogin()
                     },
                 )
                 OnuiIntro(

@@ -48,22 +48,22 @@ import java.time.LocalDate
 @Composable
 fun Calendar(
     modifier: Modifier,
-    onClick: (Boolean) -> Unit,
     fetchDate: (String) -> Unit,
 ) {
     val viewModel: CalendarViewModel = viewModel()
-    val context = LocalContext.current
     var currentYear by remember { mutableIntStateOf(LocalDate.now().year) }
     var currentMonth by remember { mutableIntStateOf(LocalDate.now().monthValue) }
-    val sharedPreferences = context.getSharedPreferences("my_shared_prefs", Context.MODE_PRIVATE)
     val weekList = listOf("월", "화", "수", "목", "금", "토", "일")
-    var fetchState by remember { mutableStateOf(false) }
+    var update by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        viewModel.fetchMonthDiary(sharedPreferences)
-        fetchState = true
+        viewModel.fetchMonthDiary(currentMonth)
+        update = true
     }
-
+    LaunchedEffect(currentMonth) {
+        viewModel.fetchMonthDiary(currentMonth)
+        update = true
+    }
 
     fun daysInMonth(month: Int, year: Int): Int {
         return when (month) {
@@ -97,6 +97,7 @@ fun Calendar(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .clickable {
+                        update = false
                         if (currentMonth - 1 < 1) {
                             currentYear--
                             currentMonth = 12
@@ -115,6 +116,7 @@ fun Calendar(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .clickable {
+                        update = false
                         if (currentMonth + 1 > 12) {
                             currentYear++
                             currentMonth = 1
@@ -151,7 +153,7 @@ fun Calendar(
                     )
                 }
             }
-            if (fetchState) {
+            if (update) {
                 FlowRow(
                     modifier = Modifier
                         .padding(
@@ -185,7 +187,6 @@ fun Calendar(
                                 .weight(1f)
                                 .clickable {
                                     select = "${date.year}${date.month}${date.day}"
-                                    onClick(true)
                                     fetchDate(select)
                                 }
                         ) {

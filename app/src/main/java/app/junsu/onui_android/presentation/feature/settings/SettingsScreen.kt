@@ -1,5 +1,6 @@
 package app.junsu.onui_android.presentation.feature.settings
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -56,6 +58,7 @@ import app.junsu.onui_android.presentation.ui.theme.outlineVariant
 import app.junsu.onui_android.presentation.ui.theme.primary
 import app.junsu.onui_android.presentation.ui.theme.primaryContainer
 import app.junsu.onui_android.presentation.ui.theme.surface
+import app.junsu.onui_android.smallImageList
 import app.junsu.onui_android.toInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -66,12 +69,17 @@ fun SettingsScreen(navController: NavController) {
     val viewModel: SettingViewModel = viewModel()
     var abuseState: Boolean? by remember { mutableStateOf(null) }
     var alarmState by remember { mutableStateOf(true) }
-    LaunchedEffect(Unit) {
+    val context = LocalContext.current
+    var update by remember { mutableStateOf(true) }
+    val sharedPreferences = context.getSharedPreferences("my_shared_prefs", Context.MODE_PRIVATE)
+
+    LaunchedEffect(update) {
         CoroutineScope(Dispatchers.IO).launch {
             viewModel.fetchProfile()
             abuseState = viewModel.profile.onFiltering
         }
     }
+    update = false
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -85,9 +93,10 @@ fun SettingsScreen(navController: NavController) {
             theme = viewModel.profile.profileTheme,
             viewModel = viewModel
         )
-        Object(
-            images = bigImageList[viewModel.profile.theme.toInt()],
-            onClick = { navController.navigate(AppNavigationItem.Theme.route) }
+        Object1(
+            images = smallImageList[viewModel.profile.theme.toInt()],
+            onClick = { navController.navigate(AppNavigationItem.Theme.route) },
+
         )
         if (abuseState != null) {
             SwitchSetting(
@@ -111,6 +120,7 @@ fun SettingsScreen(navController: NavController) {
         Setting(
             text = "로그아웃",
             onClick = {
+                sharedPreferences.edit().clear().apply()
                 navController.navigate(AppNavigationItem.Login.route) { popUpTo(0) }
             },
         )
@@ -297,7 +307,10 @@ fun MyPage(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun Object(images: List<Int>, onClick: () -> Unit) {
+fun Object1(
+    images: List<Int>,
+    onClick: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -341,7 +354,9 @@ fun Object(images: List<Int>, onClick: () -> Unit) {
                             horizontal = 8.dp,
                             vertical = 4.dp,
                         )
-                        .clickable { onClick() }
+                        .clickable {
+                            onClick()
+                        }
                 )
             }
         }

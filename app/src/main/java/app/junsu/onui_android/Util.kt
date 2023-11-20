@@ -79,7 +79,7 @@ val bigImageList = listOf(
 val smallImageList = listOf(
     listOf(
         R.drawable.very_bad_small,
-        R.drawable.very_bad_small,
+        R.drawable.bad_samll,
         R.drawable.normal_small,
         R.drawable.good_small,
         R.drawable.very_good_small,

@@ -57,7 +57,7 @@ object ApiProvider {
     fun diaryApi(): DiaryApi = getRetrofit().create(DiaryApi::class.java)
 
     fun timelineApi(): TimelineApi = getRetrofit().create(TimelineApi::class.java)
-    fun loginApi(): UserApi {
+    fun loginApi(): AuthApi {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(
@@ -67,10 +67,12 @@ object ApiProvider {
             )
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
-            .create(UserApi::class.java)
+            .create(AuthApi::class.java)
     }
 
     fun userApi(): UserApi = getRetrofit().create(UserApi::class.java)
 
     fun missionApi(): MissionApi = getRetrofit().create(MissionApi::class.java)
+
+    fun analysisApi(): AnalysisApi = getRetrofit().create(AnalysisApi::class.java)
 }

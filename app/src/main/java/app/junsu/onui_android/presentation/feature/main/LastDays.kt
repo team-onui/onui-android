@@ -86,8 +86,8 @@ fun LastDays(navController: NavController) {
             } else {
                 for (i in 0..6) {
                     today =
-                        if (date.dayOfMonth - i < 10) "${date.year}-${date.monthValue}-0${date.dayOfMonth - i}"
-                        else "${date.year}-${date.monthValue}-${date.dayOfMonth - i}"
+                        if (date.dayOfMonth -6 + i < 10) "${date.year}-${date.monthValue}-0${date.dayOfMonth -6 + i}"
+                        else "${date.year}-${date.monthValue}-${date.dayOfMonth -6 + i}"
                     if (dayCheck < weekData.diaries.size && today == weekDataReverse!![dayCheck].created_at) {
                         Image(
                             painter = painterResource(id = weekDataReverse[dayCheck].mood.toBigImage()),

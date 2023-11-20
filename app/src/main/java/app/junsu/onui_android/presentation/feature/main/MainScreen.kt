@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -29,11 +31,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.junsu.onui.R
+import app.junsu.onui_android.data.response.mission.MissionResponse
 import app.junsu.onui_android.presentation.navigation.AppNavigationItem
 import app.junsu.onui_android.presentation.ui.theme.background
 import app.junsu.onui_android.presentation.ui.theme.backgroundVariant
+import app.junsu.onui_android.presentation.ui.theme.body2
+import app.junsu.onui_android.presentation.ui.theme.headline1
 import app.junsu.onui_android.presentation.ui.theme.headline2
 import app.junsu.onui_android.presentation.ui.theme.headline3
+import app.junsu.onui_android.presentation.ui.theme.label
 import app.junsu.onui_android.presentation.ui.theme.onBackground
 import app.junsu.onui_android.presentation.ui.theme.onBackgroundVariant
 import app.junsu.onui_android.presentation.ui.theme.onPrimaryContainer
@@ -42,6 +48,7 @@ import app.junsu.onui_android.presentation.ui.theme.onSurfaceVariant
 import app.junsu.onui_android.presentation.ui.theme.primaryContainer
 import app.junsu.onui_android.presentation.ui.theme.surface
 import app.junsu.onui_android.presentation.ui.theme.surfaceVariant
+import app.junsu.onui_android.presentation.ui.theme.title1
 import app.junsu.onui_android.presentation.ui.theme.title2
 import app.junsu.onui_android.presentation.ui.theme.title3
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -51,13 +58,16 @@ import com.google.accompanist.pager.rememberPagerState
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen(navController: NavController) {
+fun MainScreen(
+    navController: NavController,
+    taskViewModel: TaskViewModel
+) {
     val weekViewModel: WeekViewModel = viewModel()
-    val taskViewModel: TaskViewModel = viewModel()
 
     LaunchedEffect(Unit) {
         weekViewModel.fetchTheme()
         taskViewModel.fetchTask()
+        taskViewModel.fetchRice()
     }
 
     Scaffold(
@@ -65,7 +75,7 @@ fun MainScreen(navController: NavController) {
             BottomAppBar(navController = navController)
         }
     ) {
-        BottomSheetScaffold(navController)
+        BottomSheetScaffold(navController, taskViewModel)
     }
 }
 
@@ -95,7 +105,10 @@ fun BottomAppBar(navController: NavController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSheetScaffold(navController: NavController) {
+fun BottomSheetScaffold(
+    navController: NavController,
+    taskViewModel: TaskViewModel
+) {
     val sheetState = rememberBottomSheetScaffoldState()
     BottomSheetScaffold(
         modifier = Modifier.fillMaxSize(),
@@ -107,7 +120,41 @@ fun BottomSheetScaffold(navController: NavController) {
                     .padding(12.dp)
             ) {
                 LastDays(navController = navController)
-                TaskScreen()
+                if (taskViewModel.task.missions.isNotEmpty()) {
+                    MainTasks(task = taskViewModel.task)
+                }
+                if (taskViewModel.rice.isNotBlank()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp)
+                            .clip(RoundedCornerShape(24.dp))
+                            .background(surface)
+                    ) {
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = "쌀",
+                                color = onSurface,
+                                style = title1,
+                                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+                            )
+                            Image(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(end = 16.dp),
+                                painter = painterResource(id = R.drawable.ssal),
+                                contentDescription = "ssal",
+                                alignment = Alignment.CenterEnd
+                            )
+                        }
+                        Text(
+                            text = taskViewModel.rice + "톨",
+                            color = onSurface,
+                            style = headline1,
+                            modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+                        )
+                    }
+                }
             }
         },
         sheetPeekHeight = 210.dp,
@@ -176,7 +223,9 @@ fun BottomSheetContent(navController: NavController) {
                         title = "하나씩",
                         subTitle = "과제",
                         image = R.drawable.ic_sharp_task_alt,
-                        onClick = { }
+                        onClick = {
+                            navController.navigate(AppNavigationItem.Task.route)
+                        }
                     )
                 }
                 Spacer(modifier = Modifier.size(8.dp))
@@ -348,4 +397,79 @@ fun OnuiSmallCard(
         }
     }
     Spacer(modifier = Modifier.size(8.dp))
+}
+
+@Composable
+fun MainTasks(task: MissionResponse) {
+    Column(
+        modifier = Modifier
+            .padding(vertical = 8.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(surface)
+    ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "과제",
+                style = title1,
+                color = onSurface,
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+            )
+            Image(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 16.dp, top = 16.dp),
+                painter = painterResource(id = R.drawable.ic_sharp_task_alt),
+                contentDescription = "SharpTaskAlt",
+                alignment = Alignment.CenterEnd
+            )
+        }
+        for (i in 0..2) {
+            val color = if (task.missions[i].isFinished) onPrimaryContainer else primaryContainer
+            val isFinished = if (task.missions[i].isFinished) primaryContainer else surface
+            Column(
+                modifier = Modifier
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 10.dp,
+                    )
+            ) {
+                Row(modifier = Modifier.padding(bottom = 4.dp)) {
+                    Text(
+                        text = task.missions[i].name,
+                        style = body2,
+                        color = onSurface,
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
+                    Text(
+                        text = task.missions[i].goal,
+                        style = label,
+                        color = onSurfaceVariant,
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
+                    Text(
+                        text = "완료!",
+                        style = label,
+                        color = isFinished,
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                    )
+                }
+                Divider(
+                    modifier = Modifier
+                        .height(8.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    color = color,
+                )
+                Text(
+                    text = task.missions[i].message,
+                    style = label,
+                    color = onSurfaceVariant,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+    }
 }
