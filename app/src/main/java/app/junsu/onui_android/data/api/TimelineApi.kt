@@ -27,4 +27,9 @@ interface TimelineApi {
         @Query("timeline_id") timelineId: String,
         @Body commentRequest: CommentRequest,
     ): TimelineCommentResponse.Comment
+
+    @POST("tl")
+    suspend fun postTimeline(
+        @Query("id") id: String
+    ): Void
 }

@@ -9,7 +9,7 @@ import app.junsu.onui_android.data.response.Analysis.AnalysisMoodResponse
 class GraphViewModel : ViewModel() {
 
     var analysisMoodResponse = AnalysisMoodResponse(0, 0, 0, 0, 0)
-    var analysisMonthlyResponse = AnalysisMonthlyResponse(listOf(), "")
+    var analysisMonthlyResponse = AnalysisMonthlyResponse(emptyList(), "")
 
     suspend fun fetchAnalysis() {
         kotlin.runCatching {

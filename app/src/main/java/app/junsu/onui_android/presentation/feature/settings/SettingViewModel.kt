@@ -66,6 +66,7 @@ class SettingViewModel : ViewModel() {
         }.onSuccess {
             state(true)
         }.onFailure {
+            state(true)
             Log.d("fail", it.toString())
         }
     }

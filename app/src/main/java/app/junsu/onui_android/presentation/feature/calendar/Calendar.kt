@@ -1,6 +1,5 @@
 package app.junsu.onui_android.presentation.feature.calendar
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,12 +29,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.junsu.onui.R
+import app.junsu.onui_android.Mood
 import app.junsu.onui_android.presentation.ui.theme.label
 import app.junsu.onui_android.presentation.ui.theme.onSurfaceVariant
 import app.junsu.onui_android.presentation.ui.theme.primary
@@ -205,10 +204,11 @@ fun Calendar(
                                     modifier = Modifier.fillMaxWidth(),
                                 )
                             } else {
-                                Image(
-                                    painter = painterResource(id = R.drawable.default_icon),
+                                Icon(
+                                    painter = painterResource(id = Mood.WORST.toSmallImage()),
                                     contentDescription = "defaultIcon",
                                     modifier = Modifier.fillMaxWidth(),
+                                    tint = Color(0xFFEEEEEE)
                                 )
                             }
                             Text(

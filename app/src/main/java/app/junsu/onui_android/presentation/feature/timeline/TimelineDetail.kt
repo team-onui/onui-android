@@ -54,8 +54,8 @@ import coil.compose.AsyncImage
 import com.google.accompanist.flowlayout.FlowRow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 
 fun filterBadWords(input: String, badWords: List<String>): String {
@@ -76,8 +76,11 @@ fun TimelineDetail(
 ) {
     val lazyListState = rememberLazyListState()
     var text by remember { mutableStateOf("") }
+    var update by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         viewModel.fetchTimelineComment()
+        delay(100)
+        update = true
     }
     Column(
         modifier = Modifier
@@ -103,20 +106,22 @@ fun TimelineDetail(
             moods = viewModel.timeline.content!![viewModel.index].tagList,
             img = viewModel.timeline.content!![viewModel.index].image,
         )
-        LazyColumn(
-            state = lazyListState,
-            contentPadding = PaddingValues(horizontal = 12.dp),
-            modifier = Modifier
-                .fillMaxHeight(0.83f)
-                .fillMaxWidth()
-        ) {
-            var commentCount = 0
-            items(items = viewModel.timelineComment.orEmpty()) {
-                Chat(
-                    text = viewModel.timelineComment?.get(commentCount)?.content.toString(),
-                    theme = viewModel.timelineComment?.get(commentCount)?.userTheme.toString(),
-                )
-                commentCount++
+        if (update) {
+            LazyColumn(
+                state = lazyListState,
+                contentPadding = PaddingValues(horizontal = 12.dp),
+                modifier = Modifier
+                    .fillMaxHeight(0.83f)
+                    .fillMaxWidth()
+            ) {
+                var commentCount = 0
+                items(items = viewModel.timelineComment.orEmpty()) {
+                    Chat(
+                        text = viewModel.timelineComment?.get(commentCount)?.content.toString(),
+                        theme = viewModel.timelineComment?.get(commentCount)?.userTheme.toString(),
+                    )
+                    commentCount++
+                }
             }
         }
         val list = listOf(
@@ -162,8 +167,11 @@ fun TimelineDetail(
                     .weight(1f)
                     .clickable {
                         CoroutineScope(Dispatchers.IO).launch {
+                            update = false
                             viewModel.postComment(text = text)
+                            viewModel.fetchTimelineComment()
                             text = ""
+                            update = true
                         }
                     },
                 tint = onSurfaceVariant,

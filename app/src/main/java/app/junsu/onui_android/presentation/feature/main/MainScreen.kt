@@ -1,6 +1,8 @@
 package app.junsu.onui_android.presentation.feature.main
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -33,6 +36,7 @@ import androidx.navigation.NavController
 import app.junsu.onui.R
 import app.junsu.onui_android.data.response.mission.MissionResponse
 import app.junsu.onui_android.presentation.navigation.AppNavigationItem
+import app.junsu.onui_android.presentation.saveDeviceToken
 import app.junsu.onui_android.presentation.ui.theme.background
 import app.junsu.onui_android.presentation.ui.theme.backgroundVariant
 import app.junsu.onui_android.presentation.ui.theme.body2
@@ -55,6 +59,10 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -63,19 +71,28 @@ fun MainScreen(
     taskViewModel: TaskViewModel
 ) {
     val weekViewModel: WeekViewModel = viewModel()
+    var update by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        weekViewModel.fetchTheme()
-        taskViewModel.fetchTask()
-        taskViewModel.fetchRice()
-    }
-
-    Scaffold(
-        bottomBar = {
-            BottomAppBar(navController = navController)
+        CoroutineScope(Dispatchers.IO).launch {
+            weekViewModel.fetchTheme()
+            taskViewModel.fetchTask()
+            taskViewModel.fetchRice()
+            weekViewModel.fetchWeekData()
+            saveDeviceToken(context = context)
+            delay(500)
+            update = true
         }
-    ) {
-        BottomSheetScaffold(navController, taskViewModel)
+    }
+    if (update) {
+        Scaffold(
+            bottomBar = {
+                BottomAppBar(navController = navController)
+            }
+        ) {
+            BottomSheetScaffold(navController, taskViewModel, weekViewModel)
+        }
     }
 }
 
@@ -107,7 +124,8 @@ fun BottomAppBar(navController: NavController) {
 @Composable
 fun BottomSheetScaffold(
     navController: NavController,
-    taskViewModel: TaskViewModel
+    taskViewModel: TaskViewModel,
+    weekViewModel: WeekViewModel,
 ) {
     val sheetState = rememberBottomSheetScaffoldState()
     BottomSheetScaffold(
@@ -119,7 +137,10 @@ fun BottomSheetScaffold(
                     .fillMaxHeight(0.83f)
                     .padding(12.dp)
             ) {
-                LastDays(navController = navController)
+                LastDays(
+                    navController = navController,
+                    weekViewModel = weekViewModel,
+                )
                 if (taskViewModel.task.missions.isNotEmpty()) {
                     MainTasks(task = taskViewModel.task)
                 }
@@ -177,6 +198,7 @@ fun BottomSheetContent(navController: NavController) {
         R.drawable.background_gray,
     )
     val pagerState = rememberPagerState()
+    val context = LocalContext.current
     Column(modifier = Modifier.padding(12.dp)) {
         Box(
             modifier = Modifier
@@ -187,7 +209,14 @@ fun BottomSheetContent(navController: NavController) {
                 modifier = Modifier
                     .fillMaxHeight(0.15f)
                     .clip(RoundedCornerShape(32.dp))
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .clickable {
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://github.com/team-onui/onui-android")
+                        )
+                        context.startActivity(intent)
+                    },
                 count = pagerContent.size,
                 state = pagerState,
             ) {

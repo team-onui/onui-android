@@ -156,7 +156,7 @@ fun RemindScreen(navController: NavController) {
                             selectedMoodChange = {
                                 if (!selectedMood.contains(it)) selectedMood.add(it)
                             },
-                            viewStateChange = {  },
+                            viewStateChange = { },
                             selectedMoodDelete = {
                                 selectedMood.remove(it)
                             }
@@ -201,7 +201,7 @@ fun RemindScreen(navController: NavController) {
             }
             if (viewState > 2) {
                 Chat(
-                    text = "(격려 메시지)\n" + "기억에 남는 사진이 있나요?",
+                    text = "기억에 남는 사진이 있나요?",
                     viewLate = { viewLate += it },
                     theme = viewModel.profile.profileTheme,
                 )
@@ -237,7 +237,11 @@ fun RemindScreen(navController: NavController) {
                 if (viewLate >= 5) {
                     Row(modifier = Modifier.padding(bottom = 12.dp)) {
                         Button(
-                            onClick = { navController.popBackStack() },
+                            onClick = {
+                                viewModel.postMood(selectText, selectMood, selectMoods, selectImage)
+                                Log.d("viewModel", "$selectText,$selectMood")
+                                navController.popBackStack()
+                            },
                             modifier = Modifier
                                 .padding(
                                     start = 16.dp,
@@ -262,8 +266,17 @@ fun RemindScreen(navController: NavController) {
                         }
                         Button(
                             onClick = {
-                                viewModel.postMood(selectText, selectMood, selectMoods, selectImage)
-                                Log.d("viewModel", "$selectText,$selectMood")
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    viewModel.postMood(
+                                        selectText,
+                                        selectMood,
+                                        selectMoods,
+                                        selectImage
+                                    )
+                                    Log.d("viewModel", "$selectText,$selectMood")
+                                    delay(300)
+                                    if (viewModel.id.isNotBlank()) viewModel.postTimeLine(viewModel.id)
+                                }
                                 navController.popBackStack()
                             },
                             modifier = Modifier
@@ -615,7 +628,7 @@ fun Chat(
             .padding(
                 top = 12.dp,
                 start = 8.dp,
-                end = 8.dp,
+                end = 16.dp,
             ),
         verticalAlignment = Alignment.CenterVertically,
     ) {

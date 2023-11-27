@@ -57,4 +57,9 @@ interface UserApi {
 
     @GET("shop/all")
     suspend fun fetchAllTheme(): AllThemeResponse
+
+    @POST("auth/device")
+    suspend fun fetchDeviceToken(
+        @Query("token") token: String
+    ): Void
 }

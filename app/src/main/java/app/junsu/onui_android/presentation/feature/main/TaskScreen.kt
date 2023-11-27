@@ -41,6 +41,7 @@ import app.junsu.onui_android.presentation.ui.theme.surface
 import app.junsu.onui_android.presentation.ui.theme.title3
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -51,29 +52,37 @@ fun TaskScreen(
 ) {
     var colorState by remember { mutableStateOf(false) }
     var isFinishedState by remember { mutableStateOf(false) }
+    var update by remember { mutableStateOf(true) }
     LaunchedEffect(colorState) {
         taskViewModel.fetchTask()
     }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(gray3)
-    ) {
-        Header(title = "과제", modifier = Modifier.clickable { navController.popBackStack() })
-        Tasks(
-            task = taskViewModel.task,
-            onClick = {
-                CoroutineScope(Dispatchers.IO).launch {
-                    taskViewModel.finishMission(it)
-                }
-            },
-            colorState = colorState,
-            isFinishedState = isFinishedState,
-            changeColorState = {
-                colorState = it
-                isFinishedState = it
-            },
-        )
+    if (update) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(gray3)
+        ) {
+            Header(title = "과제", modifier = Modifier.clickable { navController.popBackStack() })
+            if (taskViewModel.task.missions.isNotEmpty()) {
+                Tasks(
+                    task = taskViewModel.task,
+                    onClick = {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            update = false
+                            taskViewModel.finishMission(it)
+                            delay(50)
+                            update = true
+                        }
+                    },
+                    colorState = colorState,
+                    isFinishedState = isFinishedState,
+                    changeColorState = {
+                        colorState = it
+                        isFinishedState = it
+                    },
+                )
+            }
+        }
     }
 }
 
@@ -149,7 +158,7 @@ fun Tasks(
                     .align(Alignment.End)
             ) {
                 Text(
-                    text = if (!task.missions[i].isFinished) "완료됨" else "완료 하기",
+                    text = if (!task.missions[i].isFinished) "완료 하기" else "완료됨",
                     style = body2,
                     color = if (!task.missions[i].isFinished) primary else onPrimaryContainer,
                     modifier = Modifier

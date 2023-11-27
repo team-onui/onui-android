@@ -1,6 +1,7 @@
 package app.junsu.onui_android.presentation.feature.graph
 
 import android.graphics.Paint
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,11 +37,13 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import app.junsu.onui_android.Mood
 import app.junsu.onui_android.data.response.Analysis.AnalysisMonthlyResponse
 import app.junsu.onui_android.data.response.Analysis.AnalysisMoodResponse
 import app.junsu.onui_android.presentation.component.Header
 import app.junsu.onui_android.presentation.component.ToggleButton
 import app.junsu.onui_android.presentation.ui.theme.gray3
+import app.junsu.onui_android.presentation.ui.theme.label
 import app.junsu.onui_android.presentation.ui.theme.outline
 import app.junsu.onui_android.presentation.ui.theme.primary
 import app.junsu.onui_android.presentation.ui.theme.surface
@@ -72,13 +76,17 @@ fun GraphScreen(navController: NavController) {
             ) {
                 pageNum = it
             }
-            if (pageNum == 0) MaxMood(viewModel.analysisMoodResponse) else MonthMood(viewModel.analysisMonthlyResponse)
+            if (pageNum == 0)
+                MaxMood(viewModel.analysisMoodResponse)
+            else if (viewModel.analysisMonthlyResponse.list?.isNotEmpty() == true)
+                MonthMood(viewModel.analysisMonthlyResponse)
         }
     }
 }
 
 @Composable
 fun MaxMood(analysisMoodResponse: AnalysisMoodResponse) {
+    Log.d("good", analysisMoodResponse.toString())
     val data = listOf(
         analysisMoodResponse.good.toFloat(),
         analysisMoodResponse.fine.toFloat(),
@@ -102,19 +110,37 @@ fun MaxMood(analysisMoodResponse: AnalysisMoodResponse) {
     }
 }
 
+fun Mood.toFloat(): Float =
+    when (this) {
+        Mood.WORST -> 1f
+        Mood.BAD -> 2f
+        Mood.NOT_BAD -> 3f
+        Mood.FINE -> 4f
+        else -> 5f
+    }
+
 @Composable
 fun MonthMood(analysisMonthlyResponse: AnalysisMonthlyResponse) {
-    val list = listOf(10f, 30f, 3f, 1f)
+    val list = arrayListOf<Float>()
+    for (i in 0..analysisMonthlyResponse.list?.size!! - 1) {
+        list.add(analysisMonthlyResponse.list[i].mood.toFloat())
+    }
     Row(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
+        Column(modifier = Modifier.fillMaxHeight(0.7f)) {
+            Text(text = "매우 좋음", style = label, modifier = Modifier.weight(1f))
+            Text(text = "좋음", style = label, modifier = Modifier.weight(1f))
+            Text(text = "보톰", style = label, modifier = Modifier.weight(1f))
+            Text(text = "나쁨", style = label, modifier = Modifier.weight(1f))
+            Text(text = "매우 나쁨", style = label, modifier = Modifier.weight(1f))
+        }
         val zipList: List<Pair<Float, Float>> = list.zipWithNext()
         val max = list.max()
         val min = list.min()
 
-        val lineColor =
-            if (list.last() > list.first()) primary else outline
+        val lineColor = primary
 
         for (pair in zipList) {
 
@@ -123,7 +149,7 @@ fun MonthMood(analysisMonthlyResponse: AnalysisMonthlyResponse) {
 
             Canvas(
                 modifier = Modifier
-                    .fillMaxHeight()
+                    .fillMaxHeight(0.7f)
                     .weight(1f),
                 onDraw = {
                     val fromPoint =
@@ -135,7 +161,7 @@ fun MonthMood(analysisMonthlyResponse: AnalysisMonthlyResponse) {
                         color = lineColor,
                         start = fromPoint,
                         end = toPoint,
-                        strokeWidth = 3f
+                        strokeWidth = 5f
                     )
                 })
         }
@@ -192,7 +218,11 @@ fun DrawScope.drawChart(data: List<Float>, labels: List<String>, size: Size) {
             val text = buildAnnotatedString {
                 withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(label) }
             }
-            it.nativeCanvas.drawText(text.text, padding, xPosition, Paint().apply { textSize = 30f })
+            it.nativeCanvas.drawText(
+                text.text,
+                padding,
+                xPosition,
+                Paint().apply { textSize = 30f })
         }
     }
 }

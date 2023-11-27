@@ -7,7 +7,7 @@ import app.junsu.onui_android.data.request.FinishMissionRequest
 import app.junsu.onui_android.data.response.mission.MissionResponse
 import java.util.UUID
 
-class TaskViewModel: ViewModel() {
+class TaskViewModel : ViewModel() {
 
     var rice = ""
 
@@ -27,10 +27,10 @@ class TaskViewModel: ViewModel() {
         kotlin.runCatching {
             ApiProvider.missionApi().fetchMission()
         }.onSuccess {
-            Log.d("mission",it.toString())
+            Log.d("mission", it.toString())
             task = it
         }.onFailure {
-            Log.d("fail",it.toString())
+            Log.d("fail", it.toString())
         }
     }
 
@@ -40,7 +40,7 @@ class TaskViewModel: ViewModel() {
         }.onSuccess {
             task = it
         }.onFailure {
-            Log.d("fail",it.toString())
+            Log.d("fail", it.toString())
         }
     }
 }

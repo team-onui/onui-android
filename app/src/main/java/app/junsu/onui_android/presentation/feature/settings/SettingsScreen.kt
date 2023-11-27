@@ -44,7 +44,6 @@ import androidx.core.graphics.toColorInt
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.junsu.onui.R
-import app.junsu.onui_android.bigImageList
 import app.junsu.onui_android.presentation.component.CustomSwitchButton
 import app.junsu.onui_android.presentation.component.Header
 import app.junsu.onui_android.presentation.navigation.AppNavigationItem
@@ -62,6 +61,7 @@ import app.junsu.onui_android.smallImageList
 import app.junsu.onui_android.toInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -79,7 +79,6 @@ fun SettingsScreen(navController: NavController) {
             abuseState = viewModel.profile.onFiltering
         }
     }
-    update = false
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -87,17 +86,19 @@ fun SettingsScreen(navController: NavController) {
     ) {
         Header(title = "설정", modifier = Modifier.clickable { navController.popBackStack() })
         Spacer(modifier = Modifier.height(12.dp))
-        MyPage(
-            name = viewModel.profile.name,
-            navController = navController,
-            theme = viewModel.profile.profileTheme,
-            viewModel = viewModel
-        )
-        Object1(
-            images = smallImageList[viewModel.profile.theme.toInt()],
-            onClick = { navController.navigate(AppNavigationItem.Theme.route) },
-
-        )
+        if (update) {
+            MyPage(
+                name = viewModel.profile.name,
+                navController = navController,
+                theme = viewModel.profile.profileTheme,
+                viewModel = viewModel,
+                updateChange = { update = it }
+            )
+            Object1(
+                images = smallImageList[viewModel.profile.theme.toInt()],
+                onClick = { navController.navigate(AppNavigationItem.Theme.route) },
+            )
+        }
         if (abuseState != null) {
             SwitchSetting(
                 text = "비속어 필터",
@@ -213,6 +214,7 @@ fun MyPage(
     navController: NavController,
     theme: String,
     viewModel: SettingViewModel,
+    updateChange: (Boolean) -> Unit,
 ) {
     var text by remember { mutableStateOf("") }
     val interactionSource = remember { MutableInteractionSource() }
@@ -287,9 +289,13 @@ fun MyPage(
                     .background(surface)
                     .clickable {
                         CoroutineScope(Dispatchers.IO).launch {
+                            updateChange(false)
                             viewModel.patchName(text)
+                            viewModel.fetchProfile()
+                            text = ""
+                            delay(50)
+                            updateChange(true)
                         }
-                        text = ""
                     }
             ) {
                 Text(
@@ -354,9 +360,7 @@ fun Object1(
                             horizontal = 8.dp,
                             vertical = 4.dp,
                         )
-                        .clickable {
-                            onClick()
-                        }
+                        .clickable { onClick() }
                 )
             }
         }

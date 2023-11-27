@@ -38,8 +38,8 @@ import app.junsu.onui_android.presentation.ui.theme.primary
 import app.junsu.onui_android.presentation.ui.theme.surface
 import app.junsu.onui_android.presentation.ui.theme.title2
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.flowlayout.FlowRow
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,24 +48,27 @@ fun CalendarScreen(
 ) {
     val viewModel: CalendarViewModel = viewModel()
     val sheetState = rememberBottomSheetScaffoldState()
-    var date by remember { mutableStateOf("LocalDate.now()") }
+    var date by remember { mutableStateOf(LocalDate.now().toString()) }
     var dayDiary: DayDiaryResponse? by remember { mutableStateOf(null) }
-
+    var update by remember { mutableStateOf(false) }
     LaunchedEffect(date) {
         viewModel.fetchDiary(date = date, dayDiaryChange = { dayDiary = it })
+        update = true
     }
     BottomSheetScaffold(
         modifier = Modifier.fillMaxSize(),
         scaffoldState = sheetState,
         sheetContent = {
-            Content(
-                date = date,
-                content = dayDiary?.content.toString(),
-                moods = dayDiary?.tagList ?: listOf(),
-                img = dayDiary?.image,
-            )
+            if (update) {
+                Content(
+                    date = date,
+                    content = dayDiary?.content ?: "기록이 없어요",
+                    moods = dayDiary?.tagList ?: listOf(),
+                    img = dayDiary?.image,
+                )
+            }
         },
-        sheetPeekHeight = 220.dp,
+        sheetPeekHeight = 240.dp,
         sheetContainerColor = surface,
         sheetSwipeEnabled = true,
     ) {
@@ -120,7 +123,7 @@ fun Content(
                         end = 16.dp,
                     )
                     .fillMaxWidth()
-                    .height(160.dp)
+                    .height(if (img.length > 1) 160.dp else 0.dp)
                     .clip(RoundedCornerShape(16.dp)),
                 contentScale = ContentScale.Crop,
             )

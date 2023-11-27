@@ -1,7 +1,9 @@
 package app.junsu.onui_android.presentation
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
@@ -10,9 +12,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.junsu.onui_android.data.api.ApiProvider
-import app.junsu.onui_android.presentation.feature.graph.GraphScreen
 import app.junsu.onui_android.presentation.feature.calendar.CalendarScreen
 import app.junsu.onui_android.presentation.feature.chat.RemindScreen
+import app.junsu.onui_android.presentation.feature.graph.GraphScreen
 import app.junsu.onui_android.presentation.feature.login.LoginScreen
 import app.junsu.onui_android.presentation.feature.main.MainScreen
 import app.junsu.onui_android.presentation.feature.main.TaskScreen
@@ -27,6 +29,11 @@ import app.junsu.onui_android.presentation.feature.timeline.TimelineScreen
 import app.junsu.onui_android.presentation.feature.timeline.TimelineViewModel
 import app.junsu.onui_android.presentation.navigation.AppNavigationItem
 import app.junsu.onui_android.presentation.ui.theme.OnuiandroidTheme
+import com.google.firebase.FirebaseApp
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("CommitPrefEdits")
@@ -92,5 +99,29 @@ fun OnuiApp() {
                 taskViewModel = taskViewModel,
             )
         }
+    }
+}
+
+fun saveDeviceToken(context: Context) {
+    try {
+        FirebaseApp.initializeApp(context)
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            val token = task.result
+            val pref = context.getSharedPreferences("my_shared_prefs", Context.MODE_PRIVATE)
+            val editor = pref.edit()
+            editor.putString("device_token", token).apply()
+            editor.commit()
+            CoroutineScope(Dispatchers.IO).launch {
+                kotlin.runCatching {
+                    ApiProvider.userApi().fetchDeviceToken(token)
+                }.onSuccess {
+                    Log.d("성공","success")
+                }.onFailure {
+                    Log.d("fail",it.toString())
+                }
+            }
+        }
+    } catch (e: IllegalStateException) {
+        Log.d("TAG", "saveDeviceToken: $e")
     }
 }

@@ -9,7 +9,8 @@ converter-gson = "2.9.0"
 core = "1.12.0"
 firebaseAuth = "22.0.0"
 firebaseBom = "32.0.0"
-googleServices = "4.3.15"
+firebaseMessaging = "17.0.0"
+googleServices = "4.4.0"
 hilt-android = "2.48"
 hilt-navigation-compose = "1.0.0"
 kotlin = "1.8.10"
@@ -49,6 +50,7 @@ core = { module = "com.patrykandpatrick.vico:core", version.ref = "core" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessaging" }
 google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt-android" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -70,6 +72,7 @@ ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 views = { module = "com.patrykandpatrick.vico:views", version.ref = "views" }
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version = "2.8.1" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

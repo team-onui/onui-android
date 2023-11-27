@@ -1,5 +1,6 @@
 package app.junsu.onui_android.presentation.feature.store
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,7 +18,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,12 +31,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.junsu.onui.R
+import app.junsu.onui_android.catImages
+import app.junsu.onui_android.defaultImage
+import app.junsu.onui_android.flushingImages
 import app.junsu.onui_android.presentation.component.Header
 import app.junsu.onui_android.presentation.ui.theme.body2
 import app.junsu.onui_android.presentation.ui.theme.gray3
@@ -50,86 +57,113 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun SunStoreScreen(navController: NavController) {
     val viewModel: SunStoreViewModel = viewModel()
 
     var update by remember { mutableStateOf(false) }
+    var viewState by remember { mutableStateOf(false) }
+    val themes: MutableList<String> = remember { mutableStateListOf() }
+    Log.d("themes", themes.toString())
+    var dialogSate by remember { mutableStateOf(false) }
     LaunchedEffect(update) {
         CoroutineScope(Dispatchers.IO).launch {
             viewModel.fetchRice()
             viewModel.fetchAllTheme()
+            for (i in 0..viewModel.themeList.themeList.size - 1) {
+                if (!viewModel.themeList.themeList[i].isBought) {
+                    themes.add(viewModel.themeList.themeList[i].theme)
+                }
+            }
+            viewState = true
         }
     }
     update = true
-    val themes: MutableList<String> = remember { mutableStateListOf() }
-    Log.d("themes", themes.toString())
-    for (i in 0..viewModel.themeList.themeList.size - 1) {
-        if (!viewModel.themeList.themeList[i].isBought) {
-            themes.add(viewModel.themeList.themeList[i].theme)
-        }
-    }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(gray3)
-    ) {
-        Header(title = "햇님 방앗간", modifier = Modifier.clickable { navController.popBackStack() })
+    if (viewState) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 12.dp)
-                .height(120.dp)
-                .clip(RoundedCornerShape(24.dp))
-                .background(surface)
+                .fillMaxSize()
+                .background(gray3)
         ) {
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Header(title = "햇님 방앗간", modifier = Modifier.clickable { navController.popBackStack() })
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 12.dp)
+                    .height(120.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(surface)
+            ) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "쌀",
+                        color = onSurface,
+                        style = title1,
+                        modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+                    )
+                    Image(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 16.dp),
+                        painter = painterResource(id = R.drawable.ssal),
+                        contentDescription = "ssal",
+                        alignment = Alignment.CenterEnd
+                    )
+                }
                 Text(
-                    text = "쌀",
+                    text = viewModel.rice + "톨",
                     color = onSurface,
-                    style = title1,
+                    style = headline1,
                     modifier = Modifier.padding(start = 16.dp, top = 16.dp)
                 )
-                Image(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 16.dp),
-                    painter = painterResource(id = R.drawable.ssal),
-                    contentDescription = "ssal",
-                    alignment = Alignment.CenterEnd
-                )
             }
-            Text(
-                text = viewModel.rice + "톨",
-                color = onSurface,
-                style = headline1,
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-            )
-        }
-        if (viewModel.themeList.themeList.isNotEmpty()) {
-            viewModel.themeList.themeList.forEachIndexed { index, s ->
-                if (s.theme != "default") {
-                    Object(
-                        title = s.theme,
-                        images = sproutImages,
-                        onClick = {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                viewModel.buyTheme(s.theme)
-                                viewModel.fetchRice()
+            if (viewModel.themeList.themeList.isNotEmpty()) {
+                viewModel.themeList.themeList.forEachIndexed { index, s ->
+                    if (s.theme != "default") {
+                        Object(
+                            title = s.theme,
+                            images = s.theme.toImage(),
+                            onClick = {
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    viewModel.buyTheme(s.theme)
+                                    viewModel.fetchRice()
+                                }
+                                dialogSate = true
+                            },
+                            state = themes.contains(s.theme),
+                            price = viewModel.themeList.themeList[index].price.toString() + "톨",
+                            update = update,
+                            chaneUpdate = {
+                                update = it
                             }
-                        },
-                        state = themes.contains(s.theme),
-                        price = viewModel.themeList.themeList[index].price.toString() + "톨",
-                        update = update,
-                        chaneUpdate = {
-                            update = it
+                        )
+                        if (dialogSate) {
+                            Dialog1(
+                                onChangeState = {
+                                    dialogSate = it
+                                },
+                                onClick = {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        viewModel.changeTheme(s.theme)
+                                    }
+                                }
+                            )
                         }
-                    )
+                    }
                 }
             }
         }
     }
 }
+
+fun String.toImage(): List<Int> =
+    when (this) {
+        "홍조쓰" -> flushingImages
+        "애옹쓰" -> catImages
+        "새싹쓰" -> sproutImages
+        else -> defaultImage
+    }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -205,4 +239,43 @@ fun Object(
             }
         }
     }
+}
+
+@Composable
+fun Dialog1(
+    onChangeState: (Boolean) -> Unit,
+    onClick: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = { onChangeState(false) },
+        title = {
+            Text(
+                text = "테마 즉시 적용",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+        },
+        text = {
+            Column {
+                Text(
+                    text = "보유 테마는 [설정 > 내정보] 에서 가능해요!",
+                    modifier = Modifier.padding(bottom = 5.dp)
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onChangeState(false) }) {
+                Text(text = "취소", color = Color.Black)
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onChangeState(false)
+                    onClick()
+                }) {
+                Text(text = "적용", color = Color.Black)
+            }
+        }
+    )
 }

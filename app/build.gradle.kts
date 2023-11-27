@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -66,6 +67,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -82,4 +84,6 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation(libs.play.services.auth)
     implementation(libs.coil.compose)
+    implementation("com.google.firebase:firebase-analytics")
+    implementation(libs.firebase.messaging)
 }

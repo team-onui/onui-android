@@ -11,11 +11,13 @@ import app.junsu.onui_android.data.response.user.ProfileResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class RemindViewModel : ViewModel() {
 
     var profile = ProfileResponse("", "", "", "", false)
     var chatResponse = ChatResponse("")
+    var id = ""
 
     suspend fun fetchProfile() {
         kotlin.runCatching {
@@ -45,6 +47,7 @@ class RemindViewModel : ViewModel() {
                     )
                 )
             }.onSuccess {
+                id = it.id.toString()
                 Log.d("성공", "tjd")
             }.onFailure {
                 Log.d("TEST", it.toString())
@@ -58,6 +61,16 @@ class RemindViewModel : ViewModel() {
         }.onSuccess {
             chatResponse = it
             Log.d("it",it.message)
+        }.onFailure {
+            Log.d("fail", it.toString())
+        }
+    }
+
+    suspend fun postTimeLine(id: String) {
+        kotlin.runCatching {
+            ApiProvider.timelineApi().postTimeline(id)
+        }.onSuccess {
+            Log.d("success", "success")
         }.onFailure {
             Log.d("fail", it.toString())
         }

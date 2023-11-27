@@ -1,6 +1,7 @@
 package app.junsu.onui_android.presentation.feature.settings
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -90,6 +91,7 @@ fun PaletteScreen(navController: NavController) {
                             CoroutineScope(Dispatchers.IO).launch {
                                 viewModel.fetchProfileTheme(hexColorList[it])
                             }
+                            Toast.makeText(context, "변경됨",Toast.LENGTH_SHORT).show()
                         }
                 )
             }

@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "797489065606",
+    "project_id": "onui-399708",
+    "storage_bucket": "onui-399708.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:797489065606:android:bff8839376b049bf4f6b07",
+        "android_client_info": {
+          "package_name": "app.junsu.onui"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "797489065606-36a97qn426j75m2cjbnmk34kp71rasst.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.junsu.onui",
+            "certificate_hash": "a4b01aa7297b3067f20a283bf0537a4d57609981"
+          }
+        },
+        {
+          "client_id": "797489065606-1nnd5031dnc8ljrbrbgkba4rar2a6pbe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-fVjklndrkEosGsLph1Mfb1XcG8N7opk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "797489065606-1nnd5031dnc8ljrbrbgkba4rar2a6pbe.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "797489065606-app51ou4l1ngvs2d9j0ikkom79fuateb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ONUI-iOS"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

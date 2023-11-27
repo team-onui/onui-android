@@ -1,6 +1,5 @@
 package app.junsu.onui_android.presentation.feature.timeline
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -45,7 +44,6 @@ import app.junsu.onui_android.presentation.ui.theme.surface
 import app.junsu.onui_android.presentation.ui.theme.title2
 import coil.compose.AsyncImage
 import com.google.accompanist.flowlayout.FlowRow
-import java.time.LocalDate
 
 @Composable
 fun TimelineScreen(
@@ -62,7 +60,7 @@ fun TimelineScreen(
         )
         viewModel.fetchDate = fetchDate
     }
-    Log.d("fetch", viewModel.fetchDate.toString())
+
     Column(
         modifier = Modifier
             .fillMaxSize()

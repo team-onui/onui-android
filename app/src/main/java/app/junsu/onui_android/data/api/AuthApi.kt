@@ -5,6 +5,7 @@ import app.junsu.onui_android.data.response.user.LoginResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface AuthApi {
 

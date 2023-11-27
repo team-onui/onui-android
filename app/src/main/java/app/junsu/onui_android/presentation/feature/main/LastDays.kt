@@ -19,36 +19,37 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.junsu.onui.R
+import app.junsu.onui_android.Mood
 import app.junsu.onui_android.presentation.navigation.AppNavigationItem
 import app.junsu.onui_android.presentation.ui.theme.onSurface
 import app.junsu.onui_android.presentation.ui.theme.surface
 import app.junsu.onui_android.presentation.ui.theme.title1
 import app.junsu.onui_android.toBigImage
+import app.junsu.onui_android.toSmallImage
 import java.time.LocalDate
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun LastDays(navController: NavController) {
-    val weekViewModel: WeekViewModel = viewModel()
-
+fun LastDays(
+    navController: NavController,
+    weekViewModel: WeekViewModel,
+) {
     val weekData = weekViewModel.weekData
-    val weekDataReverse = weekData?.diaries
+    val weekDataReverse = weekData?.diaries?.reversed()
     val date = LocalDate.now()
     var today: String
-    LaunchedEffect(Unit) { weekViewModel.fetchWeekData() }
     Column(
         modifier = Modifier
-            .height(110.dp)
+            .height(114.dp)
             .clip(RoundedCornerShape(24.dp))
             .clickable {
                 navController.navigate(AppNavigationItem.Calendar.route)
@@ -75,19 +76,20 @@ fun LastDays(navController: NavController) {
             var dayCheck = 0
             if (weekData?.diaries == null || weekData.diaries.isEmpty()) {
                 for (i in 1..7) {
-                    Image(
-                        painter = painterResource(id = R.drawable.blank),
+                    Icon(
+                        painter = painterResource(id = Mood.WORST.toSmallImage()),
                         contentDescription = "moods",
                         modifier = Modifier
                             .fillMaxWidth(0.14f)
                             .padding(horizontal = 4.dp),
+                        tint = Color(0xFFEEEEEE),
                     )
                 }
             } else {
                 for (i in 0..6) {
                     today =
-                        if (date.dayOfMonth -6 + i < 10) "${date.year}-${date.monthValue}-0${date.dayOfMonth -6 + i}"
-                        else "${date.year}-${date.monthValue}-${date.dayOfMonth -6 + i}"
+                        if (date.dayOfMonth - 6 + i < 10) "${date.year}-${date.monthValue}-0${date.dayOfMonth - 6 + i}"
+                        else "${date.year}-${date.monthValue}-${date.dayOfMonth - 6 + i}"
                     if (dayCheck < weekData.diaries.size && today == weekDataReverse!![dayCheck].created_at) {
                         Image(
                             painter = painterResource(id = weekDataReverse[dayCheck].mood.toBigImage()),
@@ -98,12 +100,13 @@ fun LastDays(navController: NavController) {
                         )
                         dayCheck += 1
                     } else {
-                        Image(
-                            painter = painterResource(id = R.drawable.blank),
+                        Icon(
+                            painter = painterResource(id = Mood.WORST.toSmallImage()),
                             contentDescription = "moods",
                             modifier = Modifier
                                 .fillMaxWidth(0.14f)
                                 .padding(horizontal = 4.dp),
+                            tint = Color(0xFFEEEEEE),
                         )
                     }
                 }

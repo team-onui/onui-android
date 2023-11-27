@@ -213,9 +213,7 @@ fun LoginScreen(navController: NavController) {
                     title = "Google",
                     subTitle = "인증하기",
                     image = R.drawable.google,
-                    onClick = {
-                        requestGoogleLogin()
-                    },
+                    onClick = { requestGoogleLogin() },
                 )
                 OnuiIntro(
                     title = "서비스",
