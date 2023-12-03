@@ -34,7 +34,7 @@ class RemindViewModel : ViewModel() {
         selectText: String,
         selectMood: Mood,
         selectMoods: List<String>,
-        selectImage: String,
+        selectImage: String?,
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             kotlin.runCatching {

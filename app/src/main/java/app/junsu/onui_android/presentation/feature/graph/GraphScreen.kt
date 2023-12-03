@@ -163,7 +163,8 @@ fun MonthMood(analysisMonthlyResponse: AnalysisMonthlyResponse) {
                         end = toPoint,
                         strokeWidth = 5f
                     )
-                })
+                }
+            )
         }
     }
 }

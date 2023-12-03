@@ -30,6 +30,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -259,8 +261,8 @@ fun BottomSheetContent(navController: NavController) {
                 }
                 Spacer(modifier = Modifier.size(8.dp))
                 OnuiBigCard(
-                    title = "떡 꾸미기",
-                    subTitle = "햇님 방앗간",
+                    title = stringResource(id = R.string.sun_store_content),
+                    subTitle = stringResource(id = R.string.sun_store),
                     image = R.drawable.sun,
                     modifier = Modifier
                         .clickable {
@@ -273,8 +275,8 @@ fun BottomSheetContent(navController: NavController) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Box(modifier = Modifier.weight(1f)) {
                 OnuiBigCard(
-                    title = "앱 꾸미기",
-                    subTitle = "달님 만물상",
+                    title = stringResource(id = R.string.moon_store_content),
+                    subTitle = stringResource(id = R.string.moon_store),
                     image = R.drawable.moon,
                     modifier = Modifier
                         .clickable {

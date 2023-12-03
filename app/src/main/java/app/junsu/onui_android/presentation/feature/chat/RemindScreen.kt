@@ -107,7 +107,7 @@ fun RemindScreen(navController: NavController) {
         "기분이 좋아지시길 바래요\uD83E\uDD72",
     )
     var viewLate by remember { mutableIntStateOf(0) }
-    var selectImage by remember { mutableStateOf("") }
+    var selectImage: String? by remember { mutableStateOf(null) }
     val scrollState = rememberScrollState()
     LaunchedEffect(Unit) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -322,7 +322,7 @@ fun TodayFeel(
                 bottom = 12.dp
             )
         ) {
-            icons.forEachIndexed { index, icon ->
+            icons.forEachIndexed { index, _ ->
                 val mood = when (index) {
                     0 -> Mood.GOOD
                     1 -> Mood.FINE

@@ -9,4 +9,8 @@
     <string name="tip">감정 관리 팁 (PAGER)</string>
     <string name="client_id">797489065606-36a97qn426j75m2cjbnmk34kp71rasst.apps.googleusercontent.com</string>
     <string name="api_key">AIzaSyD-fVjklndrkEosGsLph1Mfb1XcG8N7opk</string>
+    <string name="moon_store_content">앱 꾸미기</string>
+    <string name="sun_store_content">떡 꾸미기</string>
+    <string name="moon_store">달님 만물상</string>
+    <string name="sun_store">햇님 방앗간</string>
 </resources>

@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,9 +32,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -40,6 +42,7 @@ import app.junsu.onui.R
 import app.junsu.onui_android.data.api.ApiProvider
 import app.junsu.onui_android.presentation.navigation.AppNavigationItem
 import app.junsu.onui_android.presentation.ui.theme.background
+import app.junsu.onui_android.presentation.ui.theme.body3
 import app.junsu.onui_android.presentation.ui.theme.headline2
 import app.junsu.onui_android.presentation.ui.theme.headline3
 import app.junsu.onui_android.presentation.ui.theme.onBackground
@@ -48,6 +51,7 @@ import app.junsu.onui_android.presentation.ui.theme.onSurface
 import app.junsu.onui_android.presentation.ui.theme.onSurfaceVariant
 import app.junsu.onui_android.presentation.ui.theme.surface
 import app.junsu.onui_android.presentation.ui.theme.surfaceVariant
+import app.junsu.onui_android.presentation.ui.theme.title1
 import app.junsu.onui_android.presentation.ui.theme.title2
 import app.junsu.onui_android.presentation.ui.theme.title3
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -68,7 +72,15 @@ import kotlinx.coroutines.launch
 fun LoginScreen(navController: NavController) {
     val context = LocalContext.current
     val pagerState = rememberPagerState()
-    val pager = listOf("a", "b", "c", "d")
+    val pagerContent = listOf(
+        "귀여운 떡을 더욱 예쁘게",
+        "직관적인 사용자 경험",
+        "기록한 하루를 한 눈에",
+        "하루를 적어내려가는",
+    )
+    val pagerTitle = listOf(
+        "상점", "전체", "달력", "기록"
+    )
     val viewModel: LoginViewModel = viewModel()
     var token by remember { mutableStateOf("") }
     val sharedPreferences = context.getSharedPreferences("my_shared_prefs", Context.MODE_PRIVATE)
@@ -91,7 +103,7 @@ fun LoginScreen(navController: NavController) {
                 if (account.id != null) {
                     CoroutineScope(Dispatchers.IO).launch {
                         viewModel.login(name = account.givenName!!, sub = account.id!!)
-                        delay(500)
+                        delay(300)
                         sharedPreferences
                             .edit()
                             .putString("token", viewModel.token)
@@ -131,18 +143,31 @@ fun LoginScreen(navController: NavController) {
             Column {
                 HorizontalPager(
                     state = pagerState,
-                    count = pager.count(),
+                    count = pagerContent.count(),
                     modifier = Modifier.fillMaxHeight(0.7f),
                     verticalAlignment = Alignment.Bottom,
                     contentPadding = PaddingValues(horizontal = 52.dp),
                 ) {
                     if (pagerState.currentPage == it) {
-                        Box(
+                        Column(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(32.dp))
                                 .fillMaxSize()
-                                .background(Color(0xFFD9D9D9))
+                                .background(surface)
                         ) {
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(
+                                text = pagerContent[it],
+                                style = body3,
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center,
+                            )
+                            Text(
+                                text = pagerTitle[it],
+                                style = title1,
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center,
+                            )
                             Image(
                                 painter = painterResource(id = list[it]),
                                 contentDescription = "image",
@@ -154,7 +179,7 @@ fun LoginScreen(navController: NavController) {
                             modifier = Modifier
                                 .clip(RoundedCornerShape(32.dp))
                                 .fillMaxSize(0.8f)
-                                .background(Color(0xFFD9D9D9)),
+                                .background(surface),
                         ) {
                             Image(
                                 painter = painterResource(id = list[it]),
