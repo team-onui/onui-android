@@ -77,4 +77,5 @@ androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx"
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kdoc = { id = "org.jetbrains.dokka", version = "1.6.10" }
 

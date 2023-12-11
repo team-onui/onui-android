@@ -11,6 +11,9 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileOutputStream
 
+/**
+ * this is a enum class about type of mood
+ */
 enum class Mood { WORST, BAD, NOT_BAD, FINE, GOOD, }
 
 val sproutImages = listOf(
@@ -138,6 +141,11 @@ val grayImageList = listOf(
     )
 )
 
+/**
+ * this is a function that change theme to int
+ *
+ * @return the theme of int
+ */
 fun String.toInt(): Int = when (this) {
     "default" -> 0
     "홍조쓰" -> 2
@@ -178,6 +186,12 @@ fun Mood.toSmallImage() =
         else -> smallImageList[imageState][4]
     }
 
+/**
+ * this is a function that image change file
+ * @param context
+ * @param uri this is image uri that taken from gallery
+ * @return get file name & extension
+ */
 fun toFile(context: Context, uri: Uri): File {
     val fileName = getFileName(context, uri)
 
@@ -214,6 +228,12 @@ private fun copyToFile(context: Context, uri: Uri, file: File) {
     outputStream.flush()
 }
 
+/**
+ * this function change application/json to multipart/form-data
+ * @param key file name
+ * @param file application/json file
+ * @return file that request to send to server
+ */
 fun getImageMultipart(key: String, file: File): MultipartBody.Part {
     return MultipartBody.Part.createFormData(
         name = key,

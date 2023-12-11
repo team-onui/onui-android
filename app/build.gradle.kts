@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     id("com.google.gms.google-services")
+    id("org.jetbrains.dokka") version "1.6.10"
 }
 
 android {
