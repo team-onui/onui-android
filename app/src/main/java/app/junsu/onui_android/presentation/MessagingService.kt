@@ -21,8 +21,21 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
+/**
+ * Service for handling Firebase Cloud Messaging (FCM) messages.
+ * This class extends [FirebaseMessagingService] and provides methods
+ * for processing incoming messages, handling new registration tokens, and
+ * scheduling background work.
+ */
 class MessagingService : FirebaseMessagingService() {
 
+    /**
+     * Called when a new FCM message is received. It processes the message
+     * and either displays a notification or sends a message notification,
+     * depending on the content of the message.
+     *
+     * @param message The received FCM message.
+     */
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
 
@@ -41,6 +54,11 @@ class MessagingService : FirebaseMessagingService() {
         }
     }
 
+    /**
+     * Called when a new FCM token is generated. It logs the new token.
+     *
+     * @param token The new FCM token.
+     */
     override fun onNewToken(token: String) {
         super.onNewToken(token)
 
@@ -54,12 +72,21 @@ class MessagingService : FirebaseMessagingService() {
         })
     }
 
+    /**
+     * Schedules a one-time background work using [MyWorker].
+     */
     private fun scheduleJob() {
         val work = OneTimeWorkRequest.Builder(MyWorker::class.java)
             .build()
         WorkManager.getInstance().beginWith(work).enqueue()
     }
 
+    /**
+     * Displays a notification with the provided title and body.
+     *
+     * @param title The title of the notification.
+     * @param body The body of the notification.
+     */
     private fun sendNotification(title: String?, body: String) {
         Log.d("title", body)
         val uniId: Int = (System.currentTimeMillis() / 7).toInt()
@@ -94,6 +121,11 @@ class MessagingService : FirebaseMessagingService() {
         notificationManager.notify(uniId, notificationBuilder.build())
     }
 
+    /**
+     * Displays a message notification with the provided data.
+     *
+     * @param message The data of the message notification.
+     */
     private fun sendMessageNotification(message: Map<String, String>) {
         val uniId: Int = (System.currentTimeMillis() / 7).toInt()
         val title = message["title"]!!
@@ -135,9 +167,19 @@ class MessagingService : FirebaseMessagingService() {
     }
 }
 
-
+/**
+ * A background worker class for handling one-time work requests.
+ * This class extends [Worker] and performs a simple task.
+ */
 internal class MyWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
+
+    /**
+     * The method where the background work is performed.
+     * In this case, it simply returns a success result.
+     *
+     * @return The result of the background work.
+     */
     override fun doWork(): Result {
         return Result.success()
     }

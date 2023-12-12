@@ -85,6 +85,11 @@ fun LoginScreen(navController: NavController) {
     var token by remember { mutableStateOf("") }
     val sharedPreferences = context.getSharedPreferences("my_shared_prefs", Context.MODE_PRIVATE)
 
+    /**
+     * Retrieves a GoogleSignInClient with default sign-in options including email access.
+     *
+     * @return A configured GoogleSignInClient instance.
+     */
     fun getGoogleClient(): GoogleSignInClient {
         val googleSignInOption =
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -94,6 +99,12 @@ fun LoginScreen(navController: NavController) {
         return GoogleSignIn.getClient(context, googleSignInOption)
     }
 
+    /**
+     * A launcher for Google Sign-In activity result handling. It processes the result and performs
+     * the necessary actions, such as logging in and updating the authentication token.
+     *
+     * @param result The result of the Google Sign-In activity.
+     */
     val googleAuthLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
@@ -116,6 +127,10 @@ fun LoginScreen(navController: NavController) {
             }
         }
 
+    /**
+     * Initiates the Google Sign-In process. Signs out the user if already signed in and launches
+     * the Google Sign-In activity.
+     */
     fun requestGoogleLogin() {
         val googleSignInClient: GoogleSignInClient by lazy { getGoogleClient() }
         googleSignInClient.signOut()

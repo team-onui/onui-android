@@ -43,6 +43,14 @@ import app.junsu.onui_android.presentation.ui.theme.title2
 import app.junsu.onui_android.toSmallImage
 import java.time.LocalDate
 
+/**
+ * calendar with icons
+ *
+ * this composable function show calendar with icons and
+ * FlowRow works by putting week and icon in the same column.
+ * @param modifier The modifier to be applied to the Calendar.
+ * @param fetchDate The day fetch records from server
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Calendar(

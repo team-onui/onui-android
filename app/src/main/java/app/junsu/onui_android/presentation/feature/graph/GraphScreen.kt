@@ -1,7 +1,6 @@
 package app.junsu.onui_android.presentation.feature.graph
 
 import android.graphics.Paint
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,7 +43,6 @@ import app.junsu.onui_android.presentation.component.Header
 import app.junsu.onui_android.presentation.component.ToggleButton
 import app.junsu.onui_android.presentation.ui.theme.gray3
 import app.junsu.onui_android.presentation.ui.theme.label
-import app.junsu.onui_android.presentation.ui.theme.outline
 import app.junsu.onui_android.presentation.ui.theme.primary
 import app.junsu.onui_android.presentation.ui.theme.surface
 import kotlin.math.roundToInt
@@ -86,7 +84,6 @@ fun GraphScreen(navController: NavController) {
 
 @Composable
 fun MaxMood(analysisMoodResponse: AnalysisMoodResponse) {
-    Log.d("good", analysisMoodResponse.toString())
     val data = listOf(
         analysisMoodResponse.good.toFloat(),
         analysisMoodResponse.fine.toFloat(),
@@ -119,6 +116,12 @@ fun Mood.toFloat(): Float =
         else -> 5f
     }
 
+/**
+ * line graph
+ *
+ * This graph shows how they felt over the course of a month.
+ * @param analysisMonthlyResponse Response containing the number moods.
+ */
 @Composable
 fun MonthMood(analysisMonthlyResponse: AnalysisMonthlyResponse) {
     val list = arrayListOf<Float>()
@@ -169,6 +172,14 @@ fun MonthMood(analysisMonthlyResponse: AnalysisMonthlyResponse) {
     }
 }
 
+/**
+ * bar graph
+ *
+ * this graph show that length of the bar by calculated count of mood
+ * @param data Converting the number of moods
+ * @param labels types of moods
+ * @param size size
+ */
 fun DrawScope.drawChart(data: List<Float>, labels: List<String>, size: Size) {
     val padding = 16f
     val width = size.width - padding * 2

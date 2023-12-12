@@ -229,10 +229,11 @@ private fun copyToFile(context: Context, uri: Uri, file: File) {
 }
 
 /**
- * this function change application/json to multipart/form-data
- * @param key file name
- * @param file application/json file
- * @return file that request to send to server
+ * Converts an application/json file to a MultipartBody.Part for use in a form-data request.
+ *
+ * @param key The name to associate with the file in the multipart request.
+ * @param file The application/json file to be converted.
+ * @return A MultipartBody.Part representing the file to be sent to the server.
  */
 fun getImageMultipart(key: String, file: File): MultipartBody.Part {
     return MultipartBody.Part.createFormData(
